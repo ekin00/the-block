@@ -1,0 +1,73 @@
+info:
+  name: Top 10 auctions ending soon
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{host}}/api/the-block?sort=ending_soon"
+  headers:
+    - name: X-User-Id
+      value: "{{user_id}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        // Capture a vehicle id for the vehicle-detail request.
+        if (res.status === 200 && Array.isArray(res.body) && res.body.length) {
+          bru.setVar("vehicle_id", res.body[0].id);
+        }
+
+        // Log how long each of the top 10 has left.
+        res.body.slice(0, 10).forEach(function(v, i) {
+          const hrsLeft = ((new Date(v.auction_end) - Date.now()) / 36e5).toFixed(1);
+          console.log(`#${i + 1} lot ${v.lot}: ${v.year} ${v.make} ${v.model} - ends in ${hrsLeft}h`);
+        });
+
+    - type: tests
+      code: |-
+        test("status is 200", function() {
+          expect(res.status).to.equal(200);
+        });
+
+        test("response is a non-empty array", function() {
+          expect(res.body).to.be.an("array");
+          expect(res.body.length).to.be.greaterThan(0);
+        });
+
+        const top10 = res.body.slice(0, 10);
+
+        test("top 10 are sorted by soonest auction_end", function() {
+          const ends = top10.map(function(v) { return new Date(v.auction_end).getTime(); });
+          const sorted = [...ends].sort(function(a, b) { return a - b; });
+          expect(ends).to.deep.equal(sorted);
+        });
+
+        test("every listing has a 5-day auction window (auction_end - auction_start)", function() {
+          const FIVE_DAYS_MS = 5 * 24 * 60 * 60 * 1000;
+          top10.forEach(function(v) {
+            const windowMs = new Date(v.auction_end).getTime() - new Date(v.auction_start).getTime();
+            expect(windowMs, `lot ${v.lot} ${v.make} ${v.model}`).to.equal(FIVE_DAYS_MS);
+          });
+        });
+
+        test("auction_end is after auction_start for every listing", function() {
+          res.body.forEach(function(v) {
+            expect(new Date(v.auction_end).getTime(), v.vin)
+              .to.be.greaterThan(new Date(v.auction_start).getTime());
+          });
+        });
+
+        test("each listing exposes the fields the listing page needs", function() {
+          top10.forEach(function(v) {
+            expect(v).to.include.keys([
+              "id", "vin", "year", "make", "model",
+              "auction_start", "auction_end",
+              "starting_bid", "current_bid", "bid_count", "images",
+            ]);
+          });
+        });
+
+settings:
+  encodeUrl: true

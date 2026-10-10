@@ -1,0 +1,19 @@
+name: Local
+variables:
+  - name: host
+    value: http://localhost:5000
+    enabled: true
+    secret: false
+    description: Base URL of the Flask API (app.run default port)
+
+  - name: vehicle_id
+    value: "1"
+    enabled: true
+    secret: false
+    description: Fallback id for vehicle-detail; overwritten at runtime by other requests
+
+  - name: user_id
+    value: "1"
+    enabled: true
+    secret: false
+    description: Fallback X-User-Id header value; overwritten at runtime by join-user

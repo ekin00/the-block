@@ -1,0 +1,38 @@
+info:
+  name: Filter listings by make
+  type: http
+  seq: 4
+
+http:
+  method: GET
+  url: "{{host}}/api/the-block?make=Ford&sort=ending_soon"
+  headers:
+    - name: X-User-Id
+      value: "{{user_id}}"
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function() {
+          expect(res.status).to.equal(200);
+        });
+
+        test("response is an array", function() {
+          expect(res.body).to.be.an("array");
+        });
+
+        test("every returned vehicle matches the make filter", function() {
+          res.body.forEach(function(v) {
+            expect(v.make).to.equal("Ford");
+          });
+        });
+
+        test("filtered results are still sorted by soonest auction_end", function() {
+          const ends = res.body.map(function(v) { return new Date(v.auction_end).getTime(); });
+          const sorted = [...ends].sort(function(a, b) { return a - b; });
+          expect(ends).to.deep.equal(sorted);
+        });
+
+settings:
+  encodeUrl: true

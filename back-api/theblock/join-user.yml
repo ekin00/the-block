@@ -1,0 +1,40 @@
+info:
+  name: Join user (get X-User-Id)
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{host}}/users/join"
+  headers:
+    - name: Content-Type
+      value: application/json
+  body:
+    type: json
+    data: |-
+      {
+        "name": "BRUNO"
+      }
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        // Join is find-or-create, so this is safe to re-run. Every request
+        // below authenticates with the X-User-Id header from this id.
+        if (res.status === 200 || res.status === 201) {
+          bru.setVar("user_id", res.body.id);
+        }
+
+    - type: tests
+      code: |-
+        test("status is 200 or 201", function() {
+          expect([200, 201]).to.include(res.status);
+        });
+
+        test("returns a numeric user id", function() {
+          expect(res.body.id).to.be.a("number");
+        });
+
+settings:
+  encodeUrl: true

@@ -1,0 +1,27 @@
+info:
+  name: Health - database connectivity
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: http://locahost:5000/health
+
+runtime:
+  scripts:
+    - type: tests
+      code: |-
+        test("status is 200", function() {
+          expect(res.status).to.equal(200);
+        });
+
+        test("database is connected", function() {
+          expect(res.body.status).to.equal("healthy");
+          expect(res.body.database).to.equal("connected");
+        });
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
