@@ -6,7 +6,7 @@ from sqlalchemy import func
 from sqlalchemy.exc import IntegrityError
 
 from extensions import db
-from models import AUCTION_DURATION_DAYS, TheBlock
+from models import AUCTION_DURATION_DAYS, KM_TO_MI, TheBlock
 
 
 theblock_bp = Blueprint("theblock", __name__, url_prefix="/api/the-block")
@@ -49,6 +49,7 @@ def _vehicle_to_dict(vehicle):
         "transmission": vehicle.transmission,
         "drivetrain": vehicle.drivetrain,
         "odometer_km": vehicle.odometer_km,
+        "odometer_mi": vehicle.odometer_mi,
         "fuel_type": vehicle.fuel_type,
         "condition_grade": vehicle.condition_grade,
         "condition_report": vehicle.condition_report,
@@ -147,6 +148,10 @@ def _parse_vehicle_payload(payload, *, partial=False):
         for field in REQUIRED_FIELDS:
             if field not in values:
                 return None, f"{field} is required."
+
+    # Miles are always derived from km so both units stay in sync.
+    if "odometer_km" in values:
+        values["odometer_mi"] = round(values["odometer_km"] * KM_TO_MI)
 
     return values, None
 

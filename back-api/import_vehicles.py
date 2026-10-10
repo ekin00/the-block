@@ -19,7 +19,7 @@ from pathlib import Path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app import app, db
-from models import AUCTION_DURATION_DAYS, TheBlock
+from models import AUCTION_DURATION_DAYS, KM_TO_MI, TheBlock
 
 DATA_FILE = Path(__file__).parent.parent / "data" / "vehicles.json"
 
@@ -60,6 +60,8 @@ def import_vehicles(random_auction: bool) -> None:
             kwargs["auction_end"] = kwargs["auction_start"] + timedelta(
                 days=AUCTION_DURATION_DAYS
             )
+            # Whole miles for U.S. display, always derived from odometer_km.
+            kwargs["odometer_mi"] = round(record["odometer_km"] * KM_TO_MI)
             db.session.add(TheBlock(**kwargs))
             imported += 1
 

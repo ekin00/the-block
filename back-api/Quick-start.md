@@ -33,10 +33,8 @@ python import_vehicles.py --random-auction
 python -m flask --app app run --debug --port 5000
 ```
 
-quick test
-
-start flash
-
 cd front-client
 
 npm install
+
+npm run dev
