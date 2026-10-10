@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-10-10T18:17:44.450Z",
+  "description": "Original on-disk bytes before snapshot-only edits. No production files are needed to build or verify the snapshot.",
+  "originalPackage": {
+    "path": "front-client/package.json",
+    "sha256": "1ba82ed2c21ad78baabb3d38241bdb144363812a341e08612f65b8f5ead04ba5"
+  },
+  "originalLock": {
+    "path": "front-client/package-lock.json",
+    "sha256": "6dbeccce6671f960864bfc026c76084be091a8153fcbd79a38eb962292ef5d5d"
+  },
+  "resolvedDependencies": {
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.0",
+    "@mui/material": "7.3.11",
+    "@mui/icons-material": "7.3.11",
+    "@mui/x-data-grid": "9.15.0",
+    "react-router-dom": "7.18.4",
+    "vite": "6.4.4",
+    "@vitejs/plugin-react": "4.3.4"
+  },
+  "files": [
+    {
+      "original": "front-client/index.html",
+      "snapshot": "index.html",
+      "sha256": "80920b8af2c6441791864a4ae23699be867863c170b9194e1b8d9979e512b30d"
+    },
+    {
+      "original": "front-client/src/main.jsx",
+      "snapshot": "src/main.jsx",
+      "sha256": "9a852254e4f6570c96a0311455d3039636e413b7dfd2e0a4acce1153ff787f1a"
+    },
+    {
+      "original": "front-client/src/App.jsx",
+      "snapshot": "src/App.jsx",
+      "sha256": "a557aba9702e8bb4e8bae10bbfb954d1e75ad66f726804c0508c77d22331894a"
+    },
+    {
+      "original": "front-client/src/App.css",
+      "snapshot": "src/App.css",
+      "sha256": "038ec5f983124a1816ddfd6acdf1b515d4563e2a256787fb5b50fe177a3920c3"
+    },
+    {
+      "original": "front-client/src/index.css",
+      "snapshot": "src/index.css",
+      "sha256": "f13571c9d63bf7ad50b7436224b94d7a457cd4c844d133c027a9dc45ddc2b60b"
+    },
+    {
+      "original": "front-client/src/theme.js",
+      "snapshot": "src/theme.js",
+      "sha256": "590e124aeba33e9c33cdb14098694c76dc317abf6a2637008394fb9a975251fd"
+    },
+    {
+      "original": "front-client/src/DataGridDemo.jsx",
+      "snapshot": "src/DataGridDemo.jsx",
+      "sha256": "a9deff9f07cacd503a852c6a605c45b13b89d027ef377ee5f374b6be405ebe2a"
+    },
+    {
+      "original": "front-client/src/context/DemoContext.jsx",
+      "snapshot": "src/context/DemoContext.jsx",
+      "sha256": "e4c130c57de78a0e8e005739ef03b60b4407f96b9821093f06a780ed6e3a05d0"
+    },
+    {
+      "original": "front-client/src/context/UserContext.jsx",
+      "snapshot": "src/context/UserContext.jsx",
+      "sha256": "a47c784ef5e08eb833ec3927342536c35fdb2e9161f458b3b6016c81aa267841"
+    },
+    {
+      "original": "front-client/src/layouts/MainLayout.jsx",
+      "snapshot": "src/layouts/MainLayout.jsx",
+      "sha256": "125df35d1258c624cb85b8e13ad3e17c941f1bd08664078e662eadcb3ab0ac6c"
+    },
+    {
+      "original": "front-client/src/components/navigation/Navbar.jsx",
+      "snapshot": "src/components/navigation/Navbar.jsx",
+      "sha256": "07825b91fcee924dfcdb9bf6f91b8073606258d6ec6636bd8205a7297134da7c"
+    },
+    {
+      "original": "front-client/src/components/navigation/Footer.jsx",
+      "snapshot": "src/components/navigation/Footer.jsx",
+      "sha256": "bcf97d3425d7836923e0d782d42397075b4d4ab0c167f525634cc3e14e9dd317"
+    },
+    {
+      "original": "front-client/src/components/inventory/InventorySearchBar.jsx",
+      "snapshot": "src/components/inventory/InventorySearchBar.jsx",
+      "sha256": "4ad8daa3443cc847b89b2389d37330a7d22d8f8b5201e4175bd50dfc56277f7a"
+    },
+    {
+      "original": "front-client/src/components/inventory/InventorySidebarFilter.jsx",
+      "snapshot": "src/components/inventory/InventorySidebarFilter.jsx",
+      "sha256": "8a4565debfa5c67a67254b81e23c907fd210c7c0cee803a2a85cd1175c105c98"
+    },
+    {
+      "original": "front-client/src/components/welcome/WelcomeForm.jsx",
+      "snapshot": "src/components/welcome/WelcomeForm.jsx",
+      "sha256": "770e640aa8972dfdb2d92403c1df294249b6ea3c4799251b406e46e97789a432"
+    },
+    {
+      "original": "front-client/src/pages/Home.jsx",
+      "snapshot": "src/pages/Home.jsx",
+      "sha256": "d7ffb1b84e4a1e2b158c0e76d0f9ab051d225e1d085f425ce0a69227ce6e8d59"
+    },
+    {
+      "original": "front-client/src/assets/the_block_truck_start.gif",
+      "snapshot": "src/assets/the_block_truck_start.gif",
+      "sha256": "ef73a906cffd9e87f78a63444b5a8e8820c89f805427019733c1fa769943cbb5"
+    },
+    {
+      "original": "front-client/public/apple-touch-icon.png",
+      "snapshot": "public/apple-touch-icon.png",
+      "sha256": "126b5ae23264269eeada14acd140e25bb20c82e68523a5f29a32c00c0fc3195b"
+    },
+    {
+      "original": "front-client/public/favicon-16x16.png",
+      "snapshot": "public/favicon-16x16.png",
+      "sha256": "a8d2918762118d3e4cf1cb612ecca5b356d0dbaad5b2ebea7e319e64684d68e8"
+    },
+    {
+      "original": "front-client/public/favicon-32x32.png",
+      "snapshot": "public/favicon-32x32.png",
+      "sha256": "6b3009d9d4d0e2d3ac835dbba32269e8bcdb4e574f4c929bc1a6914df4d7a626"
+    },
+    {
+      "original": "front-client/public/favicon.ico",
+      "snapshot": "public/favicon.ico",
+      "sha256": "e3efe66c05e14d0012bfa6926adc4cfbf6cddc8c9ac254b140ce8dea87beac2c"
+    },
+    {
+      "original": "front-client/public/site.webmanifest",
+      "snapshot": "public/site.webmanifest",
+      "sha256": "972b9380f7db52723d429edd2d892a9e3a341800b442adc972bef797fce6f90a"
+    }
+  ]
+}
