@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link as RouterLink, useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Alert, Box, Button, Skeleton, Snackbar, Typography } from '@mui/material';
+// BTW: to add Tooltip for additional info + Link to condition report
+import { Alert, Box, Button, Skeleton, Snackbar, Typography, Tooltip, Link } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useUser } from '../context/UserContext';
 import { useVehicleCatalog } from '../context/VehicleCatalogContext';
@@ -16,15 +17,15 @@ import BuyNowDialog from '../components/vehicleDetails/BuyNowDialog';
 import BidDialog from '../components/vehicleDetails/BidDialog';
 import { getBidAvailability } from '../features/vehicles/auctionActions';
 
-// xs stacks gallery -> auction -> specs -> condition; md+ keeps the auction
+// BTW update: xs stacks seps + condition -> auction -> gallery; becuase not real image any how, show data md+ keeps the auction
 // panel in a sticky right column beside the content.
 const LAYOUT_SX = {
   display: 'grid',
   gap: { xs: 2, md: 3 },
   gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'minmax(0, 7fr) minmax(0, 5fr)' },
   gridTemplateAreas: {
-    xs: '"gallery" "auction" "specs" "condition"',
-    md: '"gallery auction" "specs auction" "condition auction"',
+    xs: '"specs" "condition" "auction" "gallery"',
+    md: '"specs auction" "condition auction" "gallery auction"',
   },
   alignItems: 'start',
 };
@@ -49,9 +50,9 @@ const LoadingState = () => (
   <Box aria-busy="true" aria-label="Loading vehicle">
     <Skeleton variant="text" width="60%" height={48} />
     <Box sx={{ ...LAYOUT_SX, mt: 2 }}>
-      <Skeleton variant="rounded" height={360} sx={{ gridArea: 'gallery' }} />
-      <Skeleton variant="rounded" height={360} sx={{ gridArea: 'auction' }} />
       <Skeleton variant="rounded" height={280} sx={{ gridArea: 'specs' }} />
+      <Skeleton variant="rounded" height={360} sx={{ gridArea: 'auction' }} />
+      <Skeleton variant="rounded" height={360} sx={{ gridArea: 'gallery' }} />
     </Box>
   </Box>
 );
@@ -103,8 +104,8 @@ const VehicleDetailsPage = () => {
 
   const phase = getAuctionPhase(vehicle, now);
   const title = vehicleTitle(vehicle);
-  const location = [vehicle.city, vehicle.province].filter(Boolean).join(', ');
-  const subtitle = [vehicle.trim, vehicle.lot && `Lot ${vehicle.lot}`, location]
+  //const location = [vehicle.city, vehicle.province].filter(Boolean).join(', ');
+  const subtitle = [`VIN: ${vehicle.vin}`, `Grade ${vehicle.condition_grade}`, `Title status: ${vehicle.title_status}`]
     .filter(Boolean)
     .join(' · ');
 
@@ -135,7 +136,7 @@ const VehicleDetailsPage = () => {
     setBidOpen(false);
     setNotice(
       `Bid accepted. You are the high bidder at ${formatMoney(result.current_bid)}.`
-        + (result.reserve_met === false ? ' Reserve not met yet.' : ''),
+      + (result.reserve_met === false ? ' Reserve not met yet.' : ''),
     );
   };
 
@@ -151,12 +152,35 @@ const VehicleDetailsPage = () => {
       <Typography variant="h4" component="h1" sx={{ fontWeight: 800, fontSize: { xs: '1.6rem', sm: '2.125rem' } }}>
         {title}
       </Typography>
-      {subtitle && (
+      <Tooltip
+        interactive            // keeps the bubble open so it can be clicked
+        arrow
+        placement="bottom-start"
+        enterTouchDelay={0}
+        title={
+          <Box sx={{ maxWidth: 360 }}>
+            <Link
+              component="button"
+              variant="body2"
+              onClick={() =>
+                document.getElementById('condition-report')
+                  ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+              }
+              sx={{ color: 'inherit', fontWeight: 700 }}
+            >
+              { /* BTW jump!   */}
+              <Typography variant="body2" sx={{ mb: 0.5 }}>
+                {vehicle.condition_report?.trim() || 'No condition report provided.'}
+              </Typography>
+              Jump to condition report ↓
+            </Link>
+          </Box>
+        }
+      >
         <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
           {subtitle}
         </Typography>
-      )}
-
+      </Tooltip>
       {error && (
         <Alert
           severity="warning"
@@ -173,9 +197,12 @@ const VehicleDetailsPage = () => {
       )}
 
       <Box sx={LAYOUT_SX}>
+        { /* BTW swap with vehiclesSpecs, since gallery are fake and boring - this is done in LAYOUT_SX  */}
         <Box sx={{ gridArea: 'gallery' }}>
           <VehicleGallery key={vehicle.id} vehicle={vehicle} />
         </Box>
+
+        {/* sticky Auction panel on right*/}
         <Box sx={{ gridArea: 'auction', position: { md: 'sticky' }, top: { md: 88 } }}>
           <AuctionPanel
             vehicle={vehicle}
@@ -189,9 +216,13 @@ const VehicleDetailsPage = () => {
         <Box sx={{ gridArea: 'specs' }}>
           <VehicleSpecs vehicle={vehicle} />
         </Box>
+        <Box id="condition-report" sx={{ gridArea: 'condition', scrollMarginTop: 88 }}>
+          <ConditionReport vehicle={vehicle} />
+        </Box>
         <Box sx={{ gridArea: 'condition' }}>
           <ConditionReport vehicle={vehicle} />
         </Box>
+
       </Box>
 
       <BidDialog

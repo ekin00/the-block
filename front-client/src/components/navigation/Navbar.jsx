@@ -137,49 +137,6 @@ const Navbar = ({ children }) => {
             </span>
           </Tooltip>
 
-          {/* My Trips */}
-          {isJoined && (
-            <Button
-              color="inherit"
-              onClick={() => navigate('/trips')}
-              sx={{
-                textTransform: 'none',
-                fontWeight: isTrips ? 700 : 500,
-                borderBottom: isTrips ? '2px solid #fff' : '2px solid transparent',
-                borderRadius: 0,
-                px: { xs: 1, sm: 1.5 },
-                py: 0.5,
-                fontSize: { xs: '0.8rem', sm: '0.9rem' },
-                bgcolor: isTrips ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
-                '&:hover': {
-                  bgcolor: 'rgba(255, 255, 255, 0.18)'
-                }
-              }}
-            >
-              My Trips
-            </Button>
-          )}
-
-          {!isJoined && (
-            <Button
-              color="inherit"
-              variant="outlined"
-              size="small"
-              onClick={() => navigate('/welcome')}
-              sx={{
-                borderColor: 'rgba(255, 255, 255, 0.6)',
-                textTransform: 'none',
-                fontSize: '0.8rem',
-                ml: 1,
-                '&:hover': {
-                  borderColor: '#fff',
-                  bgcolor: 'rgba(255, 255, 255, 0.1)'
-                }
-              }}
-            >
-              Get Started
-            </Button>
-          )}
         </Stack>
       </Toolbar>
     </AppBar>

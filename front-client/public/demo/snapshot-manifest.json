@@ -1,0 +1,220 @@
+{
+  "schemaVersion": 1,
+  "snapshotVersion": "1.0.0",
+  "generatedAt": "2026-10-10T18:20:57.165Z",
+  "base": "/demo/",
+  "originalPackage": {
+    "path": "front-client/package.json",
+    "sha256": "1ba82ed2c21ad78baabb3d38241bdb144363812a341e08612f65b8f5ead04ba5"
+  },
+  "originalLock": {
+    "path": "front-client/package-lock.json",
+    "sha256": "6dbeccce6671f960864bfc026c76084be091a8153fcbd79a38eb962292ef5d5d"
+  },
+  "originalProvenanceSha256": "0c934653e4af9a0878f29300ad07da1bc748730b3998f79899ae76ef1677204e",
+  "snapshotLockSha256": "3048a78c3dfb97cf4f858c00d1e7789c5f97e78c36840a863a5e826ecd4861b2",
+  "sources": [
+    {
+      "path": ".gitignore",
+      "bytes": 23,
+      "sha256": "31fc8d05d800200459e2018761497cb39b7ae7f89e6e7a6ccd986f64c85e9dbd"
+    },
+    {
+      "path": "index.html",
+      "bytes": 666,
+      "sha256": "d2f87a68671ad68a35a6128d61fe4def0d0eaab3aa5fc841892fb642ada2a3d4"
+    },
+    {
+      "path": "originals.json",
+      "bytes": 5326,
+      "sha256": "0c934653e4af9a0878f29300ad07da1bc748730b3998f79899ae76ef1677204e"
+    },
+    {
+      "path": "package-lock.json",
+      "bytes": 101816,
+      "sha256": "3048a78c3dfb97cf4f858c00d1e7789c5f97e78c36840a863a5e826ecd4861b2"
+    },
+    {
+      "path": "package.json",
+      "bytes": 669,
+      "sha256": "8eb917455ae55760f30d7e127b835f530e4adca3e09abe5ced16d716775ac9d6"
+    },
+    {
+      "path": "public/apple-touch-icon.png",
+      "bytes": 7672,
+      "sha256": "126b5ae23264269eeada14acd140e25bb20c82e68523a5f29a32c00c0fc3195b"
+    },
+    {
+      "path": "public/favicon-16x16.png",
+      "bytes": 532,
+      "sha256": "a8d2918762118d3e4cf1cb612ecca5b356d0dbaad5b2ebea7e319e64684d68e8"
+    },
+    {
+      "path": "public/favicon-32x32.png",
+      "bytes": 1090,
+      "sha256": "6b3009d9d4d0e2d3ac835dbba32269e8bcdb4e574f4c929bc1a6914df4d7a626"
+    },
+    {
+      "path": "public/favicon.ico",
+      "bytes": 15406,
+      "sha256": "e3efe66c05e14d0012bfa6926adc4cfbf6cddc8c9ac254b140ce8dea87beac2c"
+    },
+    {
+      "path": "public/site.webmanifest",
+      "bytes": 320,
+      "sha256": "967a608c92b43c09648f2bf5e97b5b92956a36c0f32c4ef975ee4f67cd1ee4d5"
+    },
+    {
+      "path": "README.md",
+      "bytes": 3805,
+      "sha256": "51a3278ea5ebdea0b5e3c01af557ab8a1ea4a0b8c5fcb0ffd390e97b3836e0f6"
+    },
+    {
+      "path": "scripts/integrity.mjs",
+      "bytes": 6299,
+      "sha256": "76da77d9431a6536c4fc0cd1112b8e85f63f9c076efbba7c0f66625219b7aaee"
+    },
+    {
+      "path": "scripts/refresh.mjs",
+      "bytes": 1045,
+      "sha256": "0183d36a5df51822ace707732332db3f4c1924ca917fb6850c904f58a8f089fc"
+    },
+    {
+      "path": "scripts/verify.mjs",
+      "bytes": 212,
+      "sha256": "86a54d39dadab3ccac614d21a90b5267f3c455c1979e50bb90bcbc35f695d858"
+    },
+    {
+      "path": "src/App.css",
+      "bytes": 564,
+      "sha256": "038ec5f983124a1816ddfd6acdf1b515d4563e2a256787fb5b50fe177a3920c3"
+    },
+    {
+      "path": "src/App.jsx",
+      "bytes": 771,
+      "sha256": "4e4b9e4565f0f165d309fb7380f14944ee21bfc765012938441994fc122ada8b"
+    },
+    {
+      "path": "src/assets/the_block_truck_start.gif",
+      "bytes": 1714610,
+      "sha256": "ef73a906cffd9e87f78a63444b5a8e8820c89f805427019733c1fa769943cbb5"
+    },
+    {
+      "path": "src/components/inventory/InventorySearchBar.jsx",
+      "bytes": 8359,
+      "sha256": "4ad8daa3443cc847b89b2389d37330a7d22d8f8b5201e4175bd50dfc56277f7a"
+    },
+    {
+      "path": "src/components/inventory/InventorySidebarFilter.jsx",
+      "bytes": 24767,
+      "sha256": "8a4565debfa5c67a67254b81e23c907fd210c7c0cee803a2a85cd1175c105c98"
+    },
+    {
+      "path": "src/components/navigation/Footer.jsx",
+      "bytes": 1888,
+      "sha256": "bcf97d3425d7836923e0d782d42397075b4d4ab0c167f525634cc3e14e9dd317"
+    },
+    {
+      "path": "src/components/navigation/Navbar.jsx",
+      "bytes": 6830,
+      "sha256": "97843241d1234f8c6d613157c1ea5a08e184bacc2c06236b439e22ed9ee11339"
+    },
+    {
+      "path": "src/components/welcome/WelcomeForm.jsx",
+      "bytes": 4469,
+      "sha256": "5ceb03bea9963c827b7e439ff1a96f3b7a679eee75266da4678f813e922f15c6"
+    },
+    {
+      "path": "src/context/DemoContext.jsx",
+      "bytes": 2566,
+      "sha256": "7c7ef87496750883ea4a4cb507362540848b9dfa9af2a24bf097362c98b4223f"
+    },
+    {
+      "path": "src/context/UserContext.jsx",
+      "bytes": 1339,
+      "sha256": "814f79754671b4c35f6038d9897597c9c1f504737f283b4fdc032d99274627e0"
+    },
+    {
+      "path": "src/DataGridDemo.jsx",
+      "bytes": 74445,
+      "sha256": "a9deff9f07cacd503a852c6a605c45b13b89d027ef377ee5f374b6be405ebe2a"
+    },
+    {
+      "path": "src/index.css",
+      "bytes": 1410,
+      "sha256": "f13571c9d63bf7ad50b7436224b94d7a457cd4c844d133c027a9dc45ddc2b60b"
+    },
+    {
+      "path": "src/layouts/MainLayout.jsx",
+      "bytes": 1053,
+      "sha256": "1d58d758f2035cd3950750bd9217e58f22ed90bad2b25d6cce19848c45812d1a"
+    },
+    {
+      "path": "src/main.jsx",
+      "bytes": 332,
+      "sha256": "9a852254e4f6570c96a0311455d3039636e413b7dfd2e0a4acce1153ff787f1a"
+    },
+    {
+      "path": "src/pages/Home.jsx",
+      "bytes": 4104,
+      "sha256": "d7ffb1b84e4a1e2b158c0e76d0f9ab051d225e1d085f425ce0a69227ce6e8d59"
+    },
+    {
+      "path": "src/theme.js",
+      "bytes": 1528,
+      "sha256": "590e124aeba33e9c33cdb14098694c76dc317abf6a2637008394fb9a975251fd"
+    },
+    {
+      "path": "vite.config.js",
+      "bytes": 456,
+      "sha256": "083ca8dd846918c3f6da8a17443f3981e24e60819eb51193a9cf700c535be2f7"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "apple-touch-icon.png",
+      "bytes": 7672,
+      "sha256": "126b5ae23264269eeada14acd140e25bb20c82e68523a5f29a32c00c0fc3195b"
+    },
+    {
+      "path": "assets/index-aljj_t1X.css",
+      "bytes": 1399,
+      "sha256": "bda9ed718390c2f0b77d0ab99945f654664cba148dba9c46047148aac6e227ea"
+    },
+    {
+      "path": "assets/index-UhLerGG2.js",
+      "bytes": 1166018,
+      "sha256": "992680e28bf3dc813a216f7ce7d284a33b6b26ba3f062363003024a656a15e7b"
+    },
+    {
+      "path": "assets/the_block_truck_start-BHVoqU9U.gif",
+      "bytes": 1714610,
+      "sha256": "ef73a906cffd9e87f78a63444b5a8e8820c89f805427019733c1fa769943cbb5"
+    },
+    {
+      "path": "favicon-16x16.png",
+      "bytes": 532,
+      "sha256": "a8d2918762118d3e4cf1cb612ecca5b356d0dbaad5b2ebea7e319e64684d68e8"
+    },
+    {
+      "path": "favicon-32x32.png",
+      "bytes": 1090,
+      "sha256": "6b3009d9d4d0e2d3ac835dbba32269e8bcdb4e574f4c929bc1a6914df4d7a626"
+    },
+    {
+      "path": "favicon.ico",
+      "bytes": 15406,
+      "sha256": "e3efe66c05e14d0012bfa6926adc4cfbf6cddc8c9ac254b140ce8dea87beac2c"
+    },
+    {
+      "path": "index.html",
+      "bytes": 774,
+      "sha256": "71a3a5f6e4f7aa4f7c204b733086f6838c72ffc64d07a9022c6b4d49f0c9a29b"
+    },
+    {
+      "path": "site.webmanifest",
+      "bytes": 320,
+      "sha256": "967a608c92b43c09648f2bf5e97b5b92956a36c0f32c4ef975ee4f67cd1ee4d5"
+    }
+  ]
+}

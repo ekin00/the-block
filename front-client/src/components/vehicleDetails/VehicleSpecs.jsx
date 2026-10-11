@@ -21,7 +21,7 @@ const VehicleSpecs = ({ vehicle }) => (
           fontSize: '0.875rem',
         },
         '& dt': { color: 'text.secondary', pr: 2 },
-        '& dd': { m: 0, fontWeight: 600, textAlign: 'right', overflowWrap: 'anywhere' },
+        '& dd': { m: 0, fontWeight: 600, textAlign: 'left', overflowWrap: 'anywhere' },
       }}
     >
       {getSpecRows(vehicle).map(([label, value]) => (

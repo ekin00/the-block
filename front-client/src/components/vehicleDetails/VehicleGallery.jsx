@@ -76,28 +76,7 @@ const VehicleGallery = ({ vehicle }) => {
           </Box>
           {index + 1} / {images.length}
         </Box>
-        {Number.isFinite(vehicle.condition_grade) && (
-          <Box
-            sx={{
-              position: 'absolute',
-              top: 12,
-              left: 12,
-              bgcolor: conditionBadgeBg(vehicle.condition_grade),
-              color: 'common.white',
-              fontSize: '0.75rem',
-              fontWeight: 700,
-              px: 1.25,
-              py: 0.4,
-              borderRadius: 1,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 0.5,
-            }}
-          >
-            <VerifiedUserIcon sx={{ fontSize: 14 }} aria-hidden="true" />
-            Grade {vehicle.condition_grade.toFixed(1)} / 5.0
-          </Box>
-        )}
+        {/*BTW remove grade becuase it's duplicated */}
       </Box>
 
       {images.length > 1 && (

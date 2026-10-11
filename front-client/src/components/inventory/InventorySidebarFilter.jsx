@@ -446,8 +446,6 @@ export default function InventorySidebarFilter({
         onToggleExpanded={() => toggleSection('titleType')}
         onReset={() => handleResetSection('titleType')}
         onToggleValue={(val) => handleToggleValue('titleType', val)}
-        searchable
-        searchLabel="Search title types"
       />
 
       <Divider sx={{ borderColor: '#E2E8F0' }} />
