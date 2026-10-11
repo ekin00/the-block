@@ -119,6 +119,26 @@ export const VehicleCatalogProvider = ({ children }) => {
     });
   }, []);
 
+  // Merge a directly fetched record (details direct load/refresh). Before the
+  // full array has loaded only `byId` holds it, so inventory status and the
+  // one-time full fetch are unaffected.
+  const upsertRecord = useCallback((record) => {
+    if (!record?.id) {
+      return;
+    }
+    setState((prev) => {
+      const byId = new Map(prev.byId);
+      byId.set(record.id, record);
+      let records = prev.records;
+      if (prev.status === 'ready') {
+        records = prev.byId.has(record.id)
+          ? prev.records.map((existing) => (existing.id === record.id ? record : existing))
+          : [...prev.records, record];
+      }
+      return { ...prev, byId, records };
+    });
+  }, []);
+
   const getById = useCallback((id) => state.byId.get(id), [state.byId]);
 
   const value = {
@@ -129,6 +149,7 @@ export const VehicleCatalogProvider = ({ children }) => {
     ensureLoaded,
     refresh,
     applyBidResult,
+    upsertRecord,
     getById,
   };
 

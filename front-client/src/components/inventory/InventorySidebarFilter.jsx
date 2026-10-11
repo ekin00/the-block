@@ -97,7 +97,8 @@ function SectionHeader({ title, expanded, onToggleExpanded, onReset }) {
             color: '#0055E5',
             fontSize: '0.8rem',
             fontWeight: 500,
-            minWidth: 'auto',
+            minWidth: { xs: 44, md: 'auto' },
+            minHeight: { xs: 44, md: 'auto' },
             p: 0.25,
             textTransform: 'none',
             '&:hover': {
@@ -115,6 +116,8 @@ function SectionHeader({ title, expanded, onToggleExpanded, onReset }) {
           onClick={onToggleExpanded}
           sx={{
             p: 0.25,
+            minWidth: { xs: 44, md: 'auto' },
+            minHeight: { xs: 44, md: 'auto' },
             color: '#64748B',
             '&:hover': { bgcolor: 'action.hover' },
           }}
@@ -410,7 +413,10 @@ export default function InventorySidebarFilter({
             size="small"
             variant="text"
             disableRipple
-            onClick={onResetAll}
+            onClick={() => {
+              setLocalOdometer(DEFAULT_ODOMETER);
+              onResetAll();
+            }}
             sx={{
               color: '#0055E5',
               fontSize: '0.85rem',
@@ -583,6 +589,8 @@ export default function InventorySidebarFilter({
 
             {/* Dual Slider */}
             <Slider
+              getAriaLabel={(index) => (index === 0 ? 'Minimum odometer' : 'Maximum odometer')}
+              getAriaValueText={(val) => (val >= 250000 ? '250,000+ miles' : `${val.toLocaleString()} miles`)}
               value={[
                 Math.min(localOdometer[0] ?? 0, localOdometer[1] ?? 250000),
                 Math.max(localOdometer[0] ?? 0, localOdometer[1] ?? 250000),

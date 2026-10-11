@@ -11,6 +11,6 @@ export const listVehicles = async ({ signal } = {}) => {
 };
 
 export const getVehicle = async (id, { signal } = {}) => {
-  const data = await api.get(`/api/the-block/${id}`, { signal });
+  const data = await api.get(`/api/the-block/${encodeURIComponent(id)}`, { signal });
   return data ? mapVehicle(data) : null;
 };

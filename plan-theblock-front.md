@@ -4,7 +4,7 @@
 
 Freeze the current interactive mockup as a reference, then wire the production buyer experience to the existing backend in small, testable phases. Production CSS, JavaScript, shared components, and dependency updates must not change the frozen demo.
 
-Phase 0 is complete. Automated/browser checks passed, and the human reviewed the snapshot on October 10, 2026. Keep the frozen demo unchanged. Phases 1a and 1b are implemented. Phase 1c sidebar filters and drawer, Phase 1d details and Phase 1e bidding remain.
+Phase 0 is complete. Automated/browser checks passed, and the human reviewed the snapshot on October 10, 2026. Keep the frozen demo unchanged. Phases 1a, 1b and 1c (search, sidebar filters, mobile filter drawer) are implemented. Phase 1d details (including Buy Now) are implemented. Phase 1e bidding remains.
 
 ## Confirmed decisions
 
@@ -34,17 +34,17 @@ Phase 0 is complete. Automated/browser checks passed, and the human reviewed the
 
 The frontend is under `front-client/src`, not a root-level `src`.
 
-| Area | Current role | Production direction |
-| --- | --- | --- |
-| `main.jsx`, `theme.js`, `index.css`, `App.css` | Shared entry, MUI theme, global CSS | Production owns these; demo uses frozen copies in its own document |
-| `App.jsx`, `routes/routes.jsx` | Wrap every route in UserProvider, DemoProvider, and MainLayout | Production routes/providers separate from the static demo |
-| `layouts/MainLayout.jsx` | Shared Navbar/Footer; special sizing for `/demo` | Buyer layout with production navigation and footer |
-| `layouts/DashboardLayout.jsx`, `pages/*` | Mostly inherited travel/trip screens | Add vehicle pages; do not broadly refactor unrelated trip code |
-| `DataGridDemo.jsx` | Mock rows, shared VehicleGrid, inventory/favorites/compare/details and local bidding | Frozen reference; seed production components once, then stop importing it |
-| `components/inventory/*` | Controlled search bar and sidebar filters | Retain their useful interfaces and wire them to production state |
-| `context/DemoContext.jsx` | Local favorite/compare ID arrays; max-three compare | Demo-only after separation |
-| `context/UserContext.jsx` | Stores joined user in `localStorage.user` | Existing production identity mechanism |
-| `services/api.jsx` | Generic fetch client, localhost base, X-User-Id | Harden only the response/configuration behavior required by wiring |
+| Area                                           | Current role                                                                         | Production direction                                                      |
+| ---------------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------- |
+| `main.jsx`, `theme.js`, `index.css`, `App.css` | Shared entry, MUI theme, global CSS                                                  | Production owns these; demo uses frozen copies in its own document        |
+| `App.jsx`, `routes/routes.jsx`                 | Wrap every route in UserProvider, DemoProvider, and MainLayout                       | Production routes/providers separate from the static demo                 |
+| `layouts/MainLayout.jsx`                       | Shared Navbar/Footer; special sizing for `/demo`                                     | Buyer layout with production navigation and footer                        |
+| `layouts/DashboardLayout.jsx`, `pages/*`       | Mostly inherited travel/trip screens                                                 | Add vehicle pages; do not broadly refactor unrelated trip code            |
+| `DataGridDemo.jsx`                             | Mock rows, shared VehicleGrid, inventory/favorites/compare/details and local bidding | Frozen reference; seed production components once, then stop importing it |
+| `components/inventory/*`                       | Controlled search bar and sidebar filters                                            | Retain their useful interfaces and wire them to production state          |
+| `context/DemoContext.jsx`                      | Local favorite/compare ID arrays; max-three compare                                  | Demo-only after separation                                                |
+| `context/UserContext.jsx`                      | Stores joined user in `localStorage.user`                                            | Existing production identity mechanism                                    |
+| `services/api.jsx`                             | Generic fetch client, localhost base, X-User-Id                                      | Harden only the response/configuration behavior required by wiring        |
 
 The reference is `/demo/compare`. Before Phase 0, `/demo/*` was a route in the production React application and shared its entry, theme, global CSS, layout, navigation, context, and dependencies. Phase 0 now serves an independent snapshot document. A route rename or lazy import alone would not freeze it.
 
@@ -52,14 +52,14 @@ The current VehicleGrid already supports a `showActions` option. Favorites and C
 
 ### Backend
 
-| Operation | Contract | Relevant behavior |
-| --- | --- | --- |
-| Join guest/user | `POST /users/join` | Returns `{id, name}`; blank name creates a valid guest |
-| Inventory | `GET /api/the-block` | Full vehicle array, no pagination; make/body-style filters and limited sort options |
-| Details | `GET /api/the-block/:id` | Full vehicle or 404 |
-| Place bid | `POST /api/bid-tracker` | `{theblock_id, amount}`; returns accepted bid/current bid/count/status/reserve result |
-| Favorites | `GET/POST /api/favorites`, `DELETE /api/favorites/:id` | Tracking records use `theblock_id`; delete returns 204 |
-| Compare | `GET/POST /api/comparison`, `DELETE /api/comparison/:id` | Ordered tracking records; backend maximum is three; delete returns 204 |
+| Operation       | Contract                                                 | Relevant behavior                                                                     |
+| --------------- | -------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| Join guest/user | `POST /users/join`                                       | Returns `{id, name}`; blank name creates a valid guest                                |
+| Inventory       | `GET /api/the-block`                                     | Full vehicle array, no pagination; make/body-style filters and limited sort options   |
+| Details         | `GET /api/the-block/:id`                                 | Full vehicle or 404                                                                   |
+| Place bid       | `POST /api/bid-tracker`                                  | `{theblock_id, amount}`; returns accepted bid/current bid/count/status/reserve result |
+| Favorites       | `GET/POST /api/favorites`, `DELETE /api/favorites/:id`   | Tracking records use `theblock_id`; delete returns 204                                |
+| Compare         | `GET/POST /api/comparison`, `DELETE /api/comparison/:id` | Ordered tracking records; backend maximum is three; delete returns 204                |
 
 All vehicle and tracking endpoints require a valid numeric `X-User-Id`. Production should use the existing join flow, not a hard-coded database user.
 
@@ -149,7 +149,7 @@ The human reviewed and accepted the isolated reference. `/demo/` remains interac
 3. Show real upcoming/open/closed auction state and remaining time. Remove production hard-coded "2 Days" values.
 4. Closed and upcoming details remain accessible. Bid controls are disabled with an explicit reason. A 404 is a not-found state; network failures get retry, not a mock vehicle.
 5. Preserve existing image fallback/accessibility behavior and responsive detail layout.
-6. The mock Buy Now control has no backend endpoint. In production, show the price if provided but do not claim a completed purchase. Disable the purchase action with an explicit unavailable message; implementing checkout is out of scope.
+6. Buy Now (user-approved rule change): buying now wins the auction. `POST /api/bid-tracker/buy-now` with `{theblock_id}` sets `current_bid = buy_now_price` (the winning bid and final price), increments `bid_count`, makes the buyer `current_winner_id`, sets `auction_end` to server now, and records the buyer's tracker row. It is offered only while the auction is open and `current_bid < buy_now_price`; otherwise it returns 422 with the reason, and later bids get "Auction has ended." The details page confirms in a dialog, shows server errors verbatim, then shows "You won this vehicle for $X (final price)." Implemented in Phase 1d.
 
 ### Phase 1e. Real bidding
 
@@ -205,7 +205,7 @@ Write `docs/frontend-freeze-and-wiring.md` after implementation, with:
 2. A concrete React folder map and responsibilities for layouts, pages, services, contexts/hooks, and the shared grid.
 3. Each phase's actual file changes, request/response contracts, state flow, and step-by-step implementation order.
 4. Search/filter coverage and auction ordering/visibility/timezone rules, including the honest all-closed state.
-5. Bid validation/error handling and the deliberately unavailable Buy Now action.
+5. Bid validation/error handling and the Buy Now flow: Buy Now ends the auction immediately, the buyer wins, and the Buy Now price becomes the winning bid (final price).
 6. Favorites/compare persistence, max-three behavior, and exact Actions-column changes.
 7. Validation commands, tested scenarios/results, known limitations, and any unresolved backend/deployment requirements.
 
@@ -213,17 +213,17 @@ Phase 0 updated `front-client/README.md` with The Block, run commands, snapshot 
 
 ## Todos and dependencies
 
-| ID | Todo | Prerequisites |
-| --- | --- | --- |
-| freeze-demo | Completed and human-reviewed on October 10, 2026 | None |
-| production-foundation | Establishing buyer routes, API handling, data contracts, shared grid, and focused tests | freeze-demo |
-| wire-inventory | Wiring inventory with stored-date visibility and default end-time ordering | production-foundation |
-| wire-search | Wiring existing search and sidebar filters to real inventory | wire-inventory |
-| wire-details | Wiring direct vehicle details and real auction state | production-foundation |
-| wire-bidding | Wiring server-confirmed bidding and shared vehicle updates | wire-inventory, wire-search, wire-details |
-| wire-favorites | Wiring favorites and removing its production Actions column | wire-bidding |
-| wire-compare | Wiring comparison and removing its production Actions column | wire-favorites |
-| verify-document | Verifying the complete experience and writing the detailed guide | wire-compare |
+| ID                    | Todo                                                                                    | Prerequisites                             |
+| --------------------- | --------------------------------------------------------------------------------------- | ----------------------------------------- |
+| freeze-demo           | Completed and human-reviewed on October 10, 2026                                        | None                                      |
+| production-foundation | Establishing buyer routes, API handling, data contracts, shared grid, and focused tests | freeze-demo                               |
+| wire-inventory        | Wiring inventory with stored-date visibility and default end-time ordering              | production-foundation                     |
+| wire-search           | Wiring existing search and sidebar filters to real inventory                            | wire-inventory                            |
+| wire-details          | Wiring direct vehicle details and real auction state                                    | production-foundation                     |
+| wire-bidding          | Wiring server-confirmed bidding and shared vehicle updates                              | wire-inventory, wire-search, wire-details |
+| wire-favorites        | Wiring favorites and removing its production Actions column                             | wire-bidding                              |
+| wire-compare          | Wiring comparison and removing its production Actions column                            | wire-favorites                            |
+| verify-document       | Verifying the complete experience and writing the detailed guide                        | wire-compare                              |
 
 ## Limits and implementation considerations
 

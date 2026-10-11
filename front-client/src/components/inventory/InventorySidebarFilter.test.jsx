@@ -99,6 +99,22 @@ describe('InventorySidebarFilter', () => {
     expect(onResetAll).toHaveBeenCalledTimes(1);
   });
 
+  it('Clear all discards an unapplied odometer draft', () => {
+    renderWithTheme(
+      <InventorySidebarFilter
+        filters={{ odometer: [0, 250000] }}
+        onFilterChange={vi.fn()}
+        onResetAll={vi.fn()}
+      />,
+    );
+    const max = screen.getByLabelText('Max');
+    fireEvent.change(max, { target: { value: '50000' } });
+    expect(max.value).toBe('50000');
+    fireEvent.click(screen.getByRole('button', { name: 'Clear all' }));
+    expect(max.value).toBe('250000');
+    expect(screen.getByRole('slider', { name: 'Maximum odometer' })).toBeTruthy();
+  });
+
   it('Reset Make calls onResetSection("make")', () => {
     const onResetSection = vi.fn();
     renderWithTheme(
