@@ -13,6 +13,8 @@ import VehicleSpecs from '../components/vehicleDetails/VehicleSpecs';
 import ConditionReport from '../components/vehicleDetails/ConditionReport';
 import AuctionPanel from '../components/vehicleDetails/AuctionPanel';
 import BuyNowDialog from '../components/vehicleDetails/BuyNowDialog';
+import BidDialog from '../components/vehicleDetails/BidDialog';
+import { getBidAvailability } from '../features/vehicles/auctionActions';
 
 // xs stacks gallery -> auction -> specs -> condition; md+ keeps the auction
 // panel in a sticky right column beside the content.
@@ -61,6 +63,7 @@ const VehicleDetailsPage = () => {
   const { now, refreshNow } = useAuctionClockControls();
   const { vehicle, status, error, refreshing, retry } = useVehicleDetails(id);
   const [buyNowOpen, setBuyNowOpen] = useState(false);
+  const [bidOpen, setBidOpen] = useState(false);
   const [notice, setNotice] = useState(null);
 
   if (status === 'loading') {
@@ -118,6 +121,30 @@ const VehicleDetailsPage = () => {
     setNotice(`You won the ${title} for ${formatMoney(result.current_bid)}.`);
   };
 
+  const bid = getBidAvailability(vehicle, phase);
+
+  // Only a 201 lands here. Inventory reads the same catalog, so it updates
+  // without a refetch.
+  const handleBidSuccess = (result) => {
+    applyBidResult(vehicle.id, {
+      current_bid: result.current_bid,
+      bid_count: result.bid_count,
+      current_winner_id: user?.id ?? vehicle.current_winner_id,
+    });
+    refreshNow();
+    setBidOpen(false);
+    setNotice(
+      `Bid accepted. You are the high bidder at ${formatMoney(result.current_bid)}.`
+        + (result.reserve_met === false ? ' Reserve not met yet.' : ''),
+    );
+  };
+
+  // A rejected bid (outbid, ended, removed) may mean the cache is stale.
+  const handleBidStale = () => {
+    refreshNow();
+    retry();
+  };
+
   return (
     <Box>
       <BackButton />
@@ -155,6 +182,7 @@ const VehicleDetailsPage = () => {
             phase={phase}
             now={now}
             userId={user?.id}
+            onPlaceBid={() => setBidOpen(true)}
             onBuyNow={() => setBuyNowOpen(true)}
           />
         </Box>
@@ -165,6 +193,17 @@ const VehicleDetailsPage = () => {
           <ConditionReport vehicle={vehicle} />
         </Box>
       </Box>
+
+      <BidDialog
+        key={`bid-${vehicle.id}`}
+        open={bidOpen}
+        vehicle={vehicle}
+        canBid={bid.available}
+        unavailableReason={bid.reason}
+        onClose={() => setBidOpen(false)}
+        onSuccess={handleBidSuccess}
+        onStale={handleBidStale}
+      />
 
       {Number.isFinite(vehicle.buy_now_price) && (
         <BuyNowDialog

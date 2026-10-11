@@ -12,8 +12,6 @@ const startLabel = (vehicle) => {
   return start instanceof Date ? formatDateTime(start) : 'when the auction starts';
 };
 
-// Phase 1e wires real bidding; until then open auctions explain why the
-// control is unavailable rather than faking a bid.
 export function getBidAvailability(vehicle, phase) {
   switch (phase) {
     case AUCTION_PHASE.UPCOMING:
@@ -23,7 +21,7 @@ export function getBidAvailability(vehicle, phase) {
     case AUCTION_PHASE.DATA_ERROR:
       return { available: false, reason: 'Auction dates are invalid; bidding is unavailable.' };
     default:
-      return { available: false, reason: 'Online bidding arrives in Phase 1e.' };
+      return { available: true, reason: null };
   }
 }
 

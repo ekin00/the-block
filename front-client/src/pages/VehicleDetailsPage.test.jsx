@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { VehicleCatalogProvider } from '../context/VehicleCatalogContext';
@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   getVehicle: vi.fn(),
   listVehicles: vi.fn(),
   buyNow: vi.fn(),
+  placeBid: vi.fn(),
   user: { id: 7, name: 'GUEST7' },
 }));
 vi.mock('../context/UserContext', () => ({ useUser: () => ({ user: mocks.user, isJoined: true }) }));
@@ -15,7 +16,7 @@ vi.mock('../services/vehicleService', () => ({
   getVehicle: mocks.getVehicle,
   listVehicles: mocks.listVehicles,
 }));
-vi.mock('../services/bidService', () => ({ buyNow: mocks.buyNow }));
+vi.mock('../services/bidService', () => ({ buyNow: mocks.buyNow, placeBid: mocks.placeBid }));
 
 const HOUR = 3_600_000;
 const iso = (offsetMs) => new Date(Date.now() + offsetMs).toISOString().replace('Z', '');
@@ -69,7 +70,7 @@ const renderPage = (id = 'veh-1') =>
 
 afterEach(() => {
   cleanup();
-  vi.clearAllMocks();
+  vi.resetAllMocks();
 });
 
 describe('VehicleDetailsPage', () => {
@@ -87,8 +88,7 @@ describe('VehicleDetailsPage', () => {
       expect(screen.getAllByText(text).length).toBeGreaterThan(0);
     }
     expect(document.body.textContent).not.toMatch(/48,?280|\bkm\b/);
-    expect(screen.getByText('Online bidding arrives in Phase 1e.')).toBeTruthy();
-    expect(screen.getByRole('button', { name: /place bid/i }).disabled).toBe(true);
+    expect(screen.getByRole('button', { name: /place bid/i }).disabled).toBe(false);
     expect(screen.getByText('High bid')).toBeTruthy();
   });
 
@@ -152,5 +152,120 @@ describe('VehicleDetailsPage', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Confirm Buy Now' }));
     const alert = await waitFor(() => within(screen.getByRole('dialog')).getByRole('alert'));
     expect(alert.textContent).toBe('Auction has ended.');
+  });
+});
+
+describe('VehicleDetailsPage bidding', () => {
+  const openBidDialog = async () => {
+    fireEvent.click(await screen.findByRole('button', { name: /^Place bid$/i }));
+    return screen.getByRole('dialog', { name: 'Place a bid' });
+  };
+
+  const enterBid = (dialog, amount) => {
+    fireEvent.change(within(dialog).getByRole('textbox', { name: 'Your bid' }), {
+      target: { value: amount },
+    });
+  };
+
+  const acceptedBid = {
+    theblock_id: 'veh-1', my_bid: 14500.5, current_bid: 14500.5, bid_count: 4,
+    status: 'winning', reserve_met: true,
+  };
+
+  it('submits a numeric bid once and updates the high bid and winner after acceptance', async () => {
+    mocks.getVehicle.mockResolvedValue(makeVehicle());
+    mocks.placeBid.mockResolvedValue(acceptedBid);
+    renderPage();
+    const dialog = await openBidDialog();
+    enterBid(dialog, '$14,500.50');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Bid $14,500.50' }));
+
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(mocks.placeBid).toHaveBeenCalledTimes(1);
+    expect(mocks.placeBid).toHaveBeenCalledWith({ theblockId: 'veh-1', amount: 14500.5 });
+    expect(screen.getByText('Bid accepted. You are the high bidder at $14,500.50.').closest('[role="alert"]')).not.toBeNull();
+    expect(within(screen.getByText('High bid').parentElement).getByText('$14,500.50')).toBeTruthy();
+    expect(screen.getByText('You are the high bidder.')).toBeTruthy();
+    expect(screen.getByRole('button', { name: /^Place bid$/i }).disabled).toBe(false);
+    expect(mocks.getVehicle).toHaveBeenCalledTimes(1);
+  });
+
+  it('prevents duplicate submits while the first bid is pending', async () => {
+    let resolveBid;
+    mocks.getVehicle.mockResolvedValue(makeVehicle());
+    mocks.placeBid.mockImplementation(() => new Promise((resolve) => { resolveBid = resolve; }));
+    renderPage();
+    const dialog = await openBidDialog();
+    enterBid(dialog, '14500.50');
+    const submit = within(dialog).getByRole('button', { name: 'Bid $14,500.50' });
+    act(() => {
+      fireEvent.click(submit);
+      fireEvent.click(submit);
+    });
+    expect(mocks.placeBid).toHaveBeenCalledTimes(1);
+    expect(within(dialog).getByRole('button', { name: /Placing bid/ }).disabled).toBe(true);
+    expect(within(dialog).getByRole('button', { name: 'Cancel' }).disabled).toBe(true);
+    expect(within(dialog).getByRole('textbox', { name: 'Your bid' }).disabled).toBe(true);
+    fireEvent.click(submit);
+    expect(mocks.placeBid).toHaveBeenCalledTimes(1);
+
+    await act(async () => resolveBid(acceptedBid));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(mocks.placeBid).toHaveBeenCalledTimes(1);
+  });
+
+  it('shows client validation errors without sending a bid', async () => {
+    mocks.getVehicle.mockResolvedValue(makeVehicle());
+    renderPage();
+    const dialog = await openBidDialog();
+    enterBid(dialog, '12000');
+    fireEvent.click(within(dialog).getByRole('button', { name: /^Place bid$/i }));
+    expect(within(dialog).getByText('Bid must be higher than the current bid.')).toBeTruthy();
+    expect(within(dialog).getByRole('textbox', { name: 'Your bid' }).getAttribute('aria-invalid')).toBe('true');
+    expect(mocks.placeBid).not.toHaveBeenCalled();
+    expect(mocks.getVehicle).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps a 422 message verbatim while refetching and displaying the updated current bid', async () => {
+    const message = 'Bid must be higher than the current bid.';
+    mocks.getVehicle.mockResolvedValueOnce(makeVehicle());
+    mocks.getVehicle.mockResolvedValue(makeVehicle({ current_bid: 13000, bid_count: 4 }));
+    mocks.placeBid.mockRejectedValue(Object.assign(new Error(message), { status: 422 }));
+    renderPage();
+    const dialog = await openBidDialog();
+    const initialFetchCount = mocks.getVehicle.mock.calls.length;
+    enterBid(dialog, '12500');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Bid $12,500' }));
+
+    const alert = await within(dialog).findByRole('alert');
+    expect(alert.textContent).toBe(message);
+    await waitFor(() => expect(mocks.getVehicle.mock.calls.length).toBeGreaterThan(initialFetchCount));
+    expect(await within(dialog).findByText('2021 Honda Civic · Current bid $13,000 (4 bids)')).toBeTruthy();
+    expect(within(dialog).getByRole('alert').textContent).toBe(message);
+    expect(mocks.placeBid).toHaveBeenCalledTimes(1);
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+    await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull());
+    expect(within(screen.getByText('High bid').parentElement).getByText('$13,000')).toBeTruthy();
+    expect(screen.queryByText(/Bid accepted/)).toBeNull();
+  });
+
+  it('fills the amount with current bid plus $500 without submitting', async () => {
+    mocks.getVehicle.mockResolvedValue(makeVehicle());
+    renderPage();
+    const dialog = await openBidDialog();
+    fireEvent.click(within(dialog).getByRole('button', { name: '+$500' }));
+    expect(within(dialog).getByRole('textbox', { name: 'Your bid' }).value).toBe('12500');
+    expect(within(dialog).getByRole('button', { name: 'Bid $12,500' })).toBeTruthy();
+    expect(mocks.placeBid).not.toHaveBeenCalled();
+  });
+
+  it('disables Place bid for a closed vehicle', async () => {
+    mocks.getVehicle.mockResolvedValue(makeVehicle({ auction_end: iso(-HOUR) }));
+    renderPage();
+    const button = await screen.findByRole('button', { name: /^Place bid$/i });
+    expect(button.disabled).toBe(true);
+    fireEvent.click(button);
+    expect(screen.queryByRole('dialog')).toBeNull();
+    expect(mocks.placeBid).not.toHaveBeenCalled();
   });
 });

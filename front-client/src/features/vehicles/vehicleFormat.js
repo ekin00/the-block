@@ -3,15 +3,25 @@
  * backend view model (see vehicleMapping.js); nothing here invents data.
  */
 
-const moneyFormatter = new Intl.NumberFormat('en-US', {
+const wholeMoneyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
-  minimumFractionDigits: 0,
+  maximumFractionDigits: 0,
+});
+
+const centsMoneyFormatter = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+  minimumFractionDigits: 2,
   maximumFractionDigits: 2,
 });
 
+// Whole-dollar amounts drop the cents; bids with cents always show two digits.
 export function formatMoney(value) {
-  return Number.isFinite(value) ? moneyFormatter.format(value) : '—';
+  if (!Number.isFinite(value)) {
+    return '—';
+  }
+  return Number.isInteger(value) ? wholeMoneyFormatter.format(value) : centsMoneyFormatter.format(value);
 }
 
 export function formatMiles(value) {

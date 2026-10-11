@@ -4,7 +4,7 @@
 
 Freeze the current interactive mockup as a reference, then wire the production buyer experience to the existing backend in small, testable phases. Production CSS, JavaScript, shared components, and dependency updates must not change the frozen demo.
 
-Phase 0 is complete. Automated/browser checks passed, and the human reviewed the snapshot on October 10, 2026. Keep the frozen demo unchanged. Phases 1a, 1b and 1c (search, sidebar filters, mobile filter drawer) are implemented. Phase 1d details (including Buy Now) are implemented. Phase 1e bidding remains.
+Phase 0 is complete. Automated/browser checks passed, and the human reviewed the snapshot on October 10, 2026. Keep the frozen demo unchanged. Phases 1a, 1b and 1c (search, sidebar filters, mobile filter drawer) are implemented. Phase 1d details (including Buy Now) are implemented. Phase 1e real bidding is implemented.
 
 ## Confirmed decisions
 
@@ -160,6 +160,10 @@ The human reviewed and accepted the isolated reference. `/demo/` remains interac
 5. Apply accepted current bid/count/reserve/status results to the details view and cached inventory. Refetch as needed when a stale bid is rejected, without losing the useful error message.
 6. Recheck auction state after rejection or expiry. The backend remains authoritative even if the browser clock disagrees.
 7. Bid tracker deletion is not bid withdrawal. Do not add a retract-bid behavior.
+8. A bid at or above `buy_now_price` is an ordinary bid (user decision): the auction continues and Buy Now becomes unavailable. Buy Now itself is the "take the Buy Now price and win" action from Phase 1d.
+9. Inventory "Time left" abbreviates minutes: "Ends in <1 min" and "Ends in N min" (N ≤ 59). Hours and days are unchanged.
+
+Implemented in Phase 1e. Bidding happens in a dialog on the details page ("Place bid"), and the inventory updates through the shared catalog cache. Quick amounts (+$250, +$500, +$1,000) are shortcuts, not minimums. Commas are accepted only as thousands separators, so "500,50" is rejected with "Use a period for cents" rather than being read as $50,050. A 404 or 422 keeps the server message visible and refetches the vehicle. The backend is unchanged.
 
 ### Phase 2. Favorites
 

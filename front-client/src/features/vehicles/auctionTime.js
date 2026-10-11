@@ -88,13 +88,11 @@ export function getAuctionEndSummary(vehicle, now) {
   const day = 24 * hour;
   let label;
   if (remaining < minute) {
-    label = 'Ends in <1 minute';
+    label = 'Ends in <1 min';
+  } else if (remaining < hour) {
+    label = `Ends in ${Math.min(59, Math.ceil(remaining / minute))} min`;
   } else {
-    const [unit, duration] = remaining < hour
-      ? ['minute', minute]
-      : remaining <= day
-        ? ['hour', hour]
-        : ['day', day];
+    const [unit, duration] = remaining <= day ? ['hour', hour] : ['day', day];
     const count = Math.ceil(remaining / duration);
     label = `Ends in ${count} ${unit}${count === 1 ? '' : 's'}`;
   }

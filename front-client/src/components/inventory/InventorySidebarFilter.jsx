@@ -275,9 +275,8 @@ const POST_ODOMETER_SECTIONS = [
   {
     title: 'Make',
     sectionKey: 'make',
-    searchable: true,
-    searchLabel: 'Search makes',
     scrollable: true,
+/* remove  searchable, searchLabel, and scrollable for Make */
   },
   {
     title: 'Model',

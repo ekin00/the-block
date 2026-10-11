@@ -23,11 +23,11 @@ describe('parseAuctionDate', () => {
     const day = 24 * hour;
 
     it.each([
-      [1, 'Ends in <1 minute', 'error'],
-      [minute - 1, 'Ends in <1 minute', 'error'],
-      [minute, 'Ends in 1 minute', 'error'],
-      [minute + 1, 'Ends in 2 minutes', 'error'],
-      [hour - 1, 'Ends in 60 minutes', 'error'],
+      [1, 'Ends in <1 min', 'error'],
+      [minute - 1, 'Ends in <1 min', 'error'],
+      [minute, 'Ends in 1 min', 'error'],
+      [minute + 1, 'Ends in 2 min', 'error'],
+      [hour - 1, 'Ends in 59 min', 'error'],
       [hour, 'Ends in 1 hour', 'error'],
       [hour + 1, 'Ends in 2 hours', 'warning'],
       [day, 'Ends in 24 hours', 'warning'],
@@ -61,13 +61,13 @@ describe('parseAuctionDate', () => {
       };
       expect(getAuctionEndSummary({ ...vehicle, auction_end: null }, now).label).toBe('Coming soon');
       expect(getAuctionEndSummary(vehicle, vehicle.auction_start)).toEqual({
-        label: 'Ends in 59 minutes', color: 'error',
+        label: 'Ends in 59 min', color: 'error',
       });
     });
 
     it('compares an explicit local offset to the same UTC instant', () => {
       expect(getAuctionEndSummary({ auction_end: '2026-10-10T07:30:00-05:00' }, now).label)
-        .toBe('Ends in 30 minutes');
+        .toBe('Ends in 30 min');
     });
   });
 

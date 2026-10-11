@@ -115,7 +115,7 @@ describe('VehicleGrid', () => {
         <VehicleGrid rows={rows} now={new Date('2026-10-10T12:30:00Z')} paginationModel={{ page: 0, pageSize: 25 }} />
       </ThemeProvider>,
     );
-    expect(screen.getByText('Ends in 30 minutes')).toBeTruthy();
+    expect(screen.getByText('Ends in 30 min')).toBeTruthy();
   });
 
   it('marks upcoming auctions without claiming bidding is open', () => {

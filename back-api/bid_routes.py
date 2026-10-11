@@ -121,6 +121,87 @@ def bids():
     ), 201
 
 
+def _buy_now_error(vehicle, now):
+    if vehicle.buy_now_price is None:
+        return "Buy Now is not available for this vehicle."
+    if now < _as_utc(vehicle.auction_start):
+        return "Auction has not started."
+    if vehicle.auction_end is not None and now >= _as_utc(vehicle.auction_end):
+        return "Auction has ended."
+    if vehicle.current_bid is not None and vehicle.current_bid >= vehicle.buy_now_price:
+        return "Buy Now is no longer available: the current bid has reached the Buy Now price."
+    return None
+
+
+@bid_bp.route("/buy-now", methods=["POST"])
+def buy_now():
+    payload = request.get_json(silent=True)
+    if not isinstance(payload, dict):
+        return jsonify({"error": "A JSON request body is required."}), 400
+
+    theblock_id = payload.get("theblock_id")
+    if not isinstance(theblock_id, str) or not theblock_id.strip():
+        return jsonify({"error": "theblock_id is required."}), 400
+
+    vehicle = db.session.get(TheBlock, theblock_id.strip())
+    if vehicle is None:
+        return jsonify({"error": "Vehicle not found."}), 404
+
+    now = datetime.now(timezone.utc)
+    error = _buy_now_error(vehicle, now)
+    if error:
+        return jsonify({"error": error}), 422
+
+    user_id = int(g.current_user_id)
+    # Compare and store UTC in SQLite's naive datetime representation.
+    stored_now = now.replace(tzinfo=None)
+    claimed = TheBlock.query.filter(
+        TheBlock.id == vehicle.id,
+        TheBlock.buy_now_price.isnot(None),
+        TheBlock.auction_start <= stored_now,
+        db.or_(TheBlock.auction_end.is_(None), TheBlock.auction_end > stored_now),
+        db.or_(TheBlock.current_bid.is_(None),
+               TheBlock.current_bid < TheBlock.buy_now_price),
+    ).update(
+        {
+            TheBlock.current_bid: TheBlock.buy_now_price,
+            TheBlock.bid_count: TheBlock.bid_count + 1,
+            TheBlock.current_winner_id: user_id,
+            TheBlock.auction_end: stored_now,
+        },
+        synchronize_session=False,
+    )
+    if claimed != 1:
+        db.session.rollback()
+        vehicle = db.session.get(TheBlock, theblock_id.strip())
+        error = _buy_now_error(vehicle, now) if vehicle is not None else None
+        return jsonify({"error": error or "Auction has ended."}), 422
+
+    db.session.refresh(vehicle)
+    amount = vehicle.current_bid
+    entry = BidTracker.query.filter_by(
+        user_id=user_id, theblock_id=vehicle.id
+    ).first()
+    if entry is None:
+        entry = BidTracker(user_id=user_id, theblock_id=vehicle.id, my_bid=amount)
+        db.session.add(entry)
+    else:
+        entry.my_bid = amount
+    db.session.commit()
+
+    return jsonify(
+        {
+            "theblock_id": vehicle.id,
+            "my_bid": float(amount),
+            "current_bid": float(vehicle.current_bid),
+            "bid_count": vehicle.bid_count,
+            "status": "won",
+            "reserve_met": _reserve_met(vehicle, amount),
+            "auction_end": vehicle.auction_end.isoformat(),
+            "bought_now": True,
+        }
+    ), 201
+
 @bid_bp.route("/<string:theblock_id>", methods=["DELETE"])
 def bid_detail(theblock_id):
     entry = BidTracker.query.filter_by(

@@ -97,7 +97,7 @@ const ActionReason = ({ id, children }) => (
   </Typography>
 );
 
-const AuctionPanel = ({ vehicle, phase, now, userId, onBuyNow }) => {
+const AuctionPanel = ({ vehicle, phase, now, userId, onPlaceBid, onBuyNow }) => {
   const closed = phase === AUCTION_PHASE.CLOSED;
   const chip = PHASE_CHIP[phase] ?? PHASE_CHIP[AUCTION_PHASE.DATA_ERROR];
   const time = timeSummary(vehicle, phase, now);
@@ -151,6 +151,7 @@ const AuctionPanel = ({ vehicle, phase, now, userId, onBuyNow }) => {
             size="large"
             startIcon={<GavelIcon />}
             disabled={!bid.available}
+            onClick={onPlaceBid}
             aria-describedby={bid.reason ? 'place-bid-reason' : undefined}
             sx={ACTION_SX}
           >

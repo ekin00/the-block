@@ -7,7 +7,7 @@ import { getSpecRows } from './vehicleSpecs';
 describe('vehicleFormat', () => {
   it('formats money, miles and labels without inventing values', () => {
     expect(formatMoney(12500)).toBe('$12,500');
-    expect(formatMoney(12500.5)).toBe('$12,500.5');
+    expect(formatMoney(12500.5)).toBe('$12,500.50');
     expect(formatMoney(null)).toBe('—');
     expect(formatMiles(45210)).toBe('45,210 mi');
     expect(formatMiles(undefined)).toBe('Mileage unavailable');
@@ -45,10 +45,9 @@ describe('getSpecRows', () => {
 describe('auction actions', () => {
   const vehicle = { buy_now_price: 20000, current_bid: 15000, auction_start: '2026-01-01T00:00:00' };
 
-  it('explains why bidding is unavailable for every phase', () => {
-    expect(getBidAvailability(vehicle, AUCTION_PHASE.OPEN)).toEqual({
-      available: false, reason: 'Online bidding arrives in Phase 1e.',
-    });
+  it('enables bidding only while the auction is open', () => {
+    expect(getBidAvailability(vehicle, AUCTION_PHASE.OPEN)).toEqual({ available: true, reason: null });
+    expect(getBidAvailability(vehicle, AUCTION_PHASE.OPEN_ENDED).available).toBe(true);
     expect(getBidAvailability(vehicle, AUCTION_PHASE.CLOSED).reason).toBe('Auction has ended.');
     expect(getBidAvailability(vehicle, AUCTION_PHASE.UPCOMING).reason).toMatch(/^Bidding opens /);
   });
