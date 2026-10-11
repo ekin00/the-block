@@ -1,0 +1,159 @@
+/* eslint-disable react/prop-types */
+import { AppBar, Toolbar, Typography, Button, Stack, Box, Tooltip } from '@mui/material';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+
+import { useUser } from '../../context/UserContext';
+import { useFavorites } from '../../context/FavoritesContext';
+
+const Navbar = ({ children }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const { favoriteCount } = useFavorites();
+  const { logout } = useUser();
+  const handleSwitchUser = () => {
+    logout();
+    navigate('/welcome');
+  };
+  const isInventory =
+    location.pathname.startsWith('/inventory') ||
+    location.pathname.startsWith('/vehicles');
+  const isFavorites = location.pathname.startsWith('/favorites');
+
+
+  //const displayName = user?.name || 'Guest';
+
+  return (
+    <AppBar position="sticky" sx={{ top: 0, zIndex: (theme) => theme.zIndex.drawer + 1 }}>
+      <Toolbar>
+        {children}
+        {/* Brand: client-route home */}
+        <Box
+          component={Link}
+          to="/"
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 1.25,
+            cursor: 'pointer',
+            flexGrow: 1,
+            userSelect: 'none',
+            color: 'inherit',
+            textDecoration: 'none'
+          }}
+        >
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              fontWeight: 800,
+              letterSpacing: '-0.02em',
+              color: 'inherit'
+            }}
+          >
+            The Block
+          </Typography>
+        </Box>
+
+        <Stack direction="row" spacing={{ xs: 1, sm: 1.5, md: 2 }} alignItems="center">
+          {/* User greeting right before Inventory */}
+          <Typography
+            variant="body2"
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              fontWeight: 700,
+              color: 'inherit',
+              whiteSpace: 'nowrap',
+              pr: 0.5,
+              fontSize: { xs: '0.8rem', sm: '0.95rem' }
+            }}
+          >
+
+          </Typography>
+
+          {/* Inventory tab */}
+          <Button
+            color="inherit"
+            component={Link}
+            to="/inventory"
+            sx={{
+              textTransform: 'none',
+              fontWeight: isInventory ? 700 : 500,
+              borderBottom: isInventory ? '2px solid #fff' : '2px solid transparent',
+              borderRadius: 0,
+              px: { xs: 1, sm: 1.5 },
+              py: 0.5,
+              fontSize: { xs: '0.8rem', sm: '0.9rem' },
+              bgcolor: isInventory ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.18)'
+              }
+            }}
+          >
+            Inventory
+          </Button>
+
+          {/* Favorites tab */}
+          <Button
+            color="inherit"
+            component={Link}
+            to="/favorites"
+            aria-label={favoriteCount > 0 ? `Favorites (${favoriteCount})` : 'Favorites'}
+            startIcon={
+              favoriteCount > 0 ? (
+                <FavoriteIcon sx={{ color: '#ff6b6b', fontSize: '1.1rem !important' }} />
+              ) : (
+                <FavoriteBorderIcon sx={{ opacity: 0.85, fontSize: '1.1rem !important' }} />
+              )
+            }
+            sx={{
+              textTransform: 'none',
+              fontWeight: isFavorites ? 700 : 500,
+              borderBottom: isFavorites ? '2px solid #fff' : '2px solid transparent',
+              borderRadius: 0,
+              minWidth: 0,
+              px: { xs: 1, sm: 1.5 },
+              py: 0.5,
+              fontSize: { xs: '0.8rem', sm: '0.9rem' },
+              bgcolor: isFavorites ? 'rgba(255, 255, 255, 0.12)' : 'transparent',
+              '&:hover': {
+                bgcolor: 'rgba(255, 255, 255, 0.18)'
+              },
+              '& .MuiButton-startIcon': { mr: { xs: 0, sm: 1 } }
+            }}
+          >
+            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>
+              Favorites{favoriteCount > 0 ? ` (${favoriteCount})` : ''}
+            </Box>
+          </Button>
+
+          {/* Switch Test user button */}
+          <Tooltip title="Quickly switch between test users">
+            <span>
+              <Button
+                size="small"
+                variant="outlined"
+                color="primary"
+                onClick={handleSwitchUser}
+                sx={{
+                  textTransform: 'none',
+                  minHeight: 44,
+                  px: 1.5,
+                  fontSize: '0.8125rem',
+                  borderRadius: 1,
+                }}
+              >
+                Switch Test User
+              </Button>
+            </span>
+          </Tooltip>
+
+        </Stack>
+      </Toolbar>
+    </AppBar>
+  );
+};
+
+export default Navbar;

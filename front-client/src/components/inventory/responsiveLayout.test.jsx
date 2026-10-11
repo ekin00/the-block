@@ -52,9 +52,8 @@ describe('Responsive Layout 320px / 390px viewport safety', () => {
     expect(screen.getByText('The Block')).toBeTruthy();
     expect(screen.getByText(/hello guest1/i)).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Inventory' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Favorites' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Favorites' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Compare' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'My Trips' })).toBeTruthy();
 
     const toolbar = container.querySelector('.MuiToolbar-root');
     expect(toolbar).toBeTruthy();

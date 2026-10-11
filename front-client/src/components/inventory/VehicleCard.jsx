@@ -9,6 +9,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
@@ -26,6 +27,7 @@ const ACTION_SX = { minHeight: 44, minWidth: 44, textTransform: 'none' };
 const VehicleCard = ({
   vehicle,
   now,
+  userId,
   onOpenDetails,
   isFavorite = false,
   isCompared = false,
@@ -34,6 +36,11 @@ const VehicleCard = ({
 }) => {
   const bid = vehicle.current_bid ?? vehicle.starting_bid;
   const miles = vehicle.odometer_mi;
+  const isHighBidder = Boolean(
+    (userId != null && vehicle.current_winner_id != null
+      && String(vehicle.current_winner_id) === String(userId))
+    || vehicle.is_winner
+  );
 
   return (
     <Card variant="outlined" sx={{ borderRadius: 2 }}>
@@ -59,17 +66,26 @@ const VehicleCard = ({
           </Box>
           <AuctionEndChip vehicle={vehicle} now={now ?? new Date()} />
         </Stack>
-        <Typography
-          variant="h6"
-          sx={{
-            mt: 1,
-            fontWeight: 700,
-            color: 'success.main',
-            fontVariantNumeric: 'tabular-nums',
-          }}
-        >
-          {bid != null ? `$${bid.toLocaleString()}` : '—'}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
+          {isHighBidder && (
+            <Tooltip title="You are the high bidder" arrow>
+              <CheckCircleOutlineIcon
+                data-testid="high-bidder-icon"
+                sx={{ fontSize: '1.25rem', color: 'success.main', flexShrink: 0 }}
+              />
+            </Tooltip>
+          )}
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: 700,
+              color: isHighBidder ? 'success.main' : 'common.black',
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {bid != null ? `$${bid.toLocaleString()}` : '—'}
+          </Typography>
+        </Box>
       </CardContent>
       <CardActions sx={{ px: 2, pb: 2, pt: 0, gap: 1 }}>
         <Button

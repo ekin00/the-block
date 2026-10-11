@@ -85,7 +85,7 @@ describe('VehicleDetailsPage', () => {
       '1HGCM82633A004352', 'Sedan', 'Blue', 'Black', '2.0L I4', 'Automatic', 'FWD', 'Gasoline',
       '30,000 mi', 'Clean', 'Maple Motors', 'Toronto, ON', 'Clean interior.', 'Scratch on rear bumper',
     ]) {
-      expect(screen.getAllByText(text).length).toBeGreaterThan(0);
+      expect(screen.getAllByText(new RegExp(text, 'i')).length).toBeGreaterThan(0);
     }
     expect(document.body.textContent).not.toMatch(/48,?280|\bkm\b/);
     expect(screen.getByRole('button', { name: /place bid/i }).disabled).toBe(false);

@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { Link as RouterLink, useLocation, useNavigate, useParams } from 'react-router-dom';
 // BTW: to add Tooltip for additional info + Link to condition report
-import { Alert, Box, Button, Skeleton, Snackbar, Typography, Tooltip, Link } from '@mui/material';
+import { Alert, Box, Button, IconButton, Skeleton, Snackbar, Stack, Typography, Tooltip, Link } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { useUser } from '../context/UserContext';
 import { useVehicleCatalog } from '../context/VehicleCatalogContext';
+import { useFavorites } from '../context/FavoritesContext';
 import { getAuctionPhase } from '../features/vehicles/auctionTime';
 import { useAuctionClockControls } from '../features/vehicles/useAuctionClock';
 import { useVehicleDetails } from '../features/vehicles/useVehicleDetails';
@@ -61,11 +64,22 @@ const VehicleDetailsPage = () => {
   const { id } = useParams();
   const { user } = useUser();
   const { applyBidResult } = useVehicleCatalog();
+  const { isFavorite, toggleFavorite } = useFavorites();
   const { now, refreshNow } = useAuctionClockControls();
   const { vehicle, status, error, refreshing, retry } = useVehicleDetails(id);
   const [buyNowOpen, setBuyNowOpen] = useState(false);
   const [bidOpen, setBidOpen] = useState(false);
   const [notice, setNotice] = useState(null);
+
+  const handleToggleFavorite = async (vehicleId) => {
+    const isFav = isFavorite(vehicleId);
+    const result = await toggleFavorite(vehicleId);
+    if (!result.success) {
+      setNotice(result.error?.message || 'Could not update favorites.');
+    } else {
+      setNotice(isFav ? 'Removed from favorites' : 'Added to favorites');
+    }
+  };
 
   if (status === 'loading') {
     return (
@@ -149,9 +163,27 @@ const VehicleDetailsPage = () => {
   return (
     <Box>
       <BackButton />
-      <Typography variant="h4" component="h1" sx={{ fontWeight: 800, fontSize: { xs: '1.6rem', sm: '2.125rem' } }}>
-        {title}
-      </Typography>
+      <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1, flexWrap: 'wrap' }}>
+        <Typography variant="h4" component="h1" sx={{ fontWeight: 800, fontSize: { xs: '1.6rem', sm: '2.125rem' }, flex: 1 }}>
+          {title}
+        </Typography>
+        <Tooltip title={isFavorite(vehicle.id) ? 'Remove favorite' : 'Add to favorites'}>
+          <IconButton
+            onClick={() => handleToggleFavorite(vehicle.id)}
+            aria-label={isFavorite(vehicle.id) ? 'Remove favorite' : 'Add to favorites'}
+            sx={{
+              color: isFavorite(vehicle.id) ? 'error.main' : 'text.secondary',
+              border: '1px solid',
+              borderColor: isFavorite(vehicle.id) ? 'error.light' : 'divider',
+              borderRadius: 2,
+              width: 44,
+              height: 44,
+            }}
+          >
+            {isFavorite(vehicle.id) ? <FavoriteIcon color="error" /> : <FavoriteBorderIcon />}
+          </IconButton>
+        </Tooltip>
+      </Stack>
       <Tooltip
         interactive            // keeps the bubble open so it can be clicked
         arrow
@@ -209,6 +241,8 @@ const VehicleDetailsPage = () => {
             phase={phase}
             now={now}
             userId={user?.id}
+            isFavorite={isFavorite(vehicle.id)}
+            onToggleFavorite={() => handleToggleFavorite(vehicle.id)}
             onPlaceBid={() => setBidOpen(true)}
             onBuyNow={() => setBuyNowOpen(true)}
           />

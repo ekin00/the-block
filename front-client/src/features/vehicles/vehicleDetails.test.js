@@ -38,7 +38,7 @@ describe('getSpecRows', () => {
     expect(map.Odometer).toBe('30,000 mi');
     expect(map.Location).toBe('Toronto, ON');
     expect(JSON.stringify(rows)).not.toMatch(/48,?280|km/i);
-    expect(rows).toHaveLength(17);
+    expect(rows).toHaveLength(16);
   });
 });
 

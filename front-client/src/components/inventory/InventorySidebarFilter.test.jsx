@@ -210,7 +210,7 @@ describe('InventorySidebarFilter', () => {
 
   it('filters section options by search query case-insensitively', () => {
     const options = {
-      make: [
+      model: [
         { value: 'Toyota', label: 'Toyota', count: 10 },
         { value: 'Tesla', label: 'Tesla', count: 5 },
         { value: 'Ford', label: 'Ford', count: 8 },
@@ -218,13 +218,14 @@ describe('InventorySidebarFilter', () => {
     };
     renderWithTheme(
       <InventorySidebarFilter
-        filters={{ make: [] }}
+        filters={{ model: [] }}
         options={options}
         onFilterChange={vi.fn()}
       />,
     );
 
-    const searchInput = screen.getByRole('textbox', { name: 'Search makes' });
+    fireEvent.click(screen.getByRole('button', { name: 'Expand Model' }));
+    const searchInput = screen.getByRole('textbox', { name: 'Search models' });
     fireEvent.change(searchInput, { target: { value: 'to' } });
 
     expect(screen.getByText('Toyota (10)')).toBeTruthy();

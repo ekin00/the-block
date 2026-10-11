@@ -2,6 +2,7 @@
 import { Alert, Box, Button, Chip, Divider, Paper, Stack, Typography } from '@mui/material';
 import GavelIcon from '@mui/icons-material/Gavel';
 import BoltIcon from '@mui/icons-material/Bolt';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { AUCTION_PHASE, parseAuctionDate } from '../../features/vehicles/auctionTime';
 import {
@@ -97,7 +98,16 @@ const ActionReason = ({ id, children }) => (
   </Typography>
 );
 
-const AuctionPanel = ({ vehicle, phase, now, userId, onPlaceBid, onBuyNow }) => {
+const AuctionPanel = ({
+  vehicle,
+  phase,
+  now,
+  userId,
+  onPlaceBid,
+  onBuyNow,
+  isFavorite = false,
+  onToggleFavorite,
+}) => {
   const closed = phase === AUCTION_PHASE.CLOSED;
   const chip = PHASE_CHIP[phase] ?? PHASE_CHIP[AUCTION_PHASE.DATA_ERROR];
   const time = timeSummary(vehicle, phase, now);
@@ -187,14 +197,27 @@ const AuctionPanel = ({ vehicle, phase, now, userId, onPlaceBid, onBuyNow }) => 
           <Button
             fullWidth
             variant="outlined"
-            startIcon={<FavoriteBorderIcon />}
-            disabled
-            aria-describedby="favorite-reason"
-            sx={ACTION_SX}
+            startIcon={
+              isFavorite ? (
+                <FavoriteIcon sx={{ color: 'error.main' }} />
+              ) : (
+                <FavoriteBorderIcon />
+              )
+            }
+            disabled={!onToggleFavorite}
+            onClick={onToggleFavorite}
+            aria-describedby={!onToggleFavorite ? 'favorite-reason' : undefined}
+            sx={{
+              ...ACTION_SX,
+              color: isFavorite ? 'error.main' : undefined,
+              borderColor: isFavorite ? 'error.light' : undefined,
+            }}
           >
-            Add to favorites
+            {isFavorite ? 'Remove from favorites' : 'Add to favorites'}
           </Button>
-          <ActionReason id="favorite-reason">Favorites arrive in Phase 2.</ActionReason>
+          {!onToggleFavorite && (
+            <ActionReason id="favorite-reason">Favorites arrive in Phase 2.</ActionReason>
+          )}
         </Box>
       </Stack>
 

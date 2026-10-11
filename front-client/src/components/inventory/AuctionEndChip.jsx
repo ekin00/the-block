@@ -12,7 +12,7 @@ const AuctionEndChip = ({ vehicle, now }) => {
   const upcoming = getAuctionPhase(vehicle, now) === AUCTION_PHASE.UPCOMING;
   const end = parseAuctionDate(vehicle.auction_end);
   /* BTW bid count is more helpuful then date */
-  const bidCount = vehicle.bid_count;
+  const bidCount = Number.isFinite(vehicle.bid_count) ? vehicle.bid_count : 0;
   const start = parseAuctionDate(vehicle.auction_start);
   const title = upcoming && start instanceof Date
     ? `Starts ${start.toLocaleString()}`

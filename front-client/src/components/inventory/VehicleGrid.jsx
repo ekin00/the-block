@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import * as React from 'react';
 import {
+  Box,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -10,6 +11,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
@@ -125,6 +127,8 @@ const VehicleGrid = ({
   rowCount,
   loading = false,
   now = new Date(),
+  userId,
+  showFavorite = false,
   onOpenDetails,
   onToggleFavorite,
   onToggleCompare,
@@ -234,16 +238,11 @@ const VehicleGrid = ({
         field: 'auction_end',
         headerName: 'Time left',
         width: 140,
-        renderCell: (params) => {
-          return (
-
-            <Typography variant="body2" sx={VEHICLE_TEXT_SX}>
-              <AuctionEndChip vehicle={params.row} now={now} />
-            </Typography>
-
-          );
-        }
-
+        renderCell: (params) => (
+          <Box sx={{ display: 'inline-flex', alignItems: 'center', height: '100%' }}>
+            <AuctionEndChip vehicle={params.row} now={now} />
+          </Box>
+        ),
       },
       {
         field: 'current_bid',
@@ -253,39 +252,65 @@ const VehicleGrid = ({
         headerAlign: 'right',
         renderCell: (params) => {
           const bid = params.row.current_bid ?? params.row.starting_bid;
+          const isHighBidder = Boolean(
+            (userId != null && params.row.current_winner_id != null
+              && String(params.row.current_winner_id) === String(userId))
+            || params.row.is_winner
+          );
           return (
-            <Typography
-              variant="body2"
+            <Box
               sx={{
-                fontWeight: 700,
-                /* color: 'success.main' */
-                fontVariantNumeric: 'tabular-nums',
-              }
-              }
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                gap: 0.5,
+                width: '100%',
+              }}
             >
-              {bid != null ? `$${bid.toLocaleString()}` : '—'}
-            </Typography >
+              {isHighBidder && (
+                <Tooltip title="You are the high bidder" arrow>
+                  <CheckCircleOutlineIcon
+                    data-testid="high-bidder-icon"
+                    sx={{ fontSize: '1rem', color: 'success.main', flexShrink: 0 }}
+                  />
+                </Tooltip>
+              )}
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 700,
+                  color: isHighBidder ? 'success.main' : 'common.black',
+                  fontVariantNumeric: 'tabular-nums',
+                }}
+              >
+                {bid != null ? `$${bid.toLocaleString()}` : '—'}
+              </Typography>
+            </Box>
           );
         },
       },
-      {
-        field: 'favorite',
-        headerName: 'Favorite',
-        width: 95,
-        sortable: false,
-        filterable: false,
-        align: 'center',
-        headerAlign: 'center',
-        renderCell: (params) => (
-          <FavoriteCell
-            vehicleId={params.row.id}
-            favoriteIds={favoriteIds}
-            onToggleFavorite={onToggleFavorite}
-          />
-        ),
-      },
+      ...(showFavorite
+        ? [
+            {
+              field: 'favorite',
+              headerName: 'Favorite',
+              width: 95,
+              sortable: false,
+              filterable: false,
+              align: 'center',
+              headerAlign: 'center',
+              renderCell: (params) => (
+                <FavoriteCell
+                  vehicleId={params.row.id}
+                  favoriteIds={favoriteIds}
+                  onToggleFavorite={onToggleFavorite}
+                />
+              ),
+            },
+          ]
+        : []),
     ],
-    [compareIds, favoriteIds, now, onToggleCompare, onToggleFavorite],
+    [compareIds, favoriteIds, now, onToggleCompare, onToggleFavorite, showFavorite, userId],
   );
 
   return (

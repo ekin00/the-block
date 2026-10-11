@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Alert,
@@ -12,6 +12,7 @@ import {
   IconButton,
   MenuItem,
   Skeleton,
+  Snackbar,
   Stack,
   TextField,
   Typography,
@@ -20,7 +21,9 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import TuneIcon from '@mui/icons-material/Tune';
+import { UserContext } from '../context/UserContext';
 import { useVehicleCatalog } from '../context/VehicleCatalogContext';
+import { useFavorites } from '../context/FavoritesContext';
 import InventorySearchBar from '../components/inventory/InventorySearchBar';
 import InventorySidebarFilter from '../components/inventory/InventorySidebarFilter';
 import VehicleGrid from '../components/inventory/VehicleGrid';
@@ -43,7 +46,11 @@ const DRAWER_PAPER_SLOT_PROPS = {
 const DRAWER_MODAL_PROPS = { keepMounted: true };
 
 const InventoryPage = () => {
+  const userContext = useContext(UserContext);
+  const user = userContext?.user;
   const { status, records, error, ensureLoaded, refresh } = useVehicleCatalog();
+  const { favoriteIds, toggleFavorite } = useFavorites();
+  const [favoriteNotice, setFavoriteNotice] = useState(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'), { noSsr: true });
   const now = useAuctionClock();
@@ -97,12 +104,31 @@ const InventoryPage = () => {
   const resetFilterSection = (key) =>
     update({ filters: { [key]: key === 'odometer' ? [...DEFAULT_ODOMETER] : [] } });
 
+  const handleToggleFavorite = async (vehicleId) => {
+    const isFav = favoriteIds.includes(vehicleId);
+    const result = await toggleFavorite(vehicleId);
+    if (!result.success) {
+      setFavoriteNotice({
+        severity: 'error',
+        message: result.error?.message || 'Could not update favorites. Please try again.',
+      });
+    } else {
+      setFavoriteNotice({
+        severity: 'success',
+        message: isFav ? 'Removed from favorites' : 'Added to favorites',
+      });
+    }
+  };
+
   const hasCriteria = Boolean(query) || activeFilterCount > 0;
   const activeTotal = view.activeRows.length;
   const rendererProps = {
     rows: view.pageRows,
     rowCount: view.rowCount,
     now,
+    userId: user?.id,
+    favoriteIds,
+    onToggleFavorite: handleToggleFavorite,
     paginationModel: view.paginationModel,
     onPaginationModelChange: (paginationModel) => update({ paginationModel }),
     onOpenDetails: (vehicle) => navigate(`/vehicles/${encodeURIComponent(vehicle.id)}`),
@@ -291,6 +317,13 @@ const InventoryPage = () => {
           </Grid>
         </Grid>
       ) : null}
+
+      <Snackbar
+        open={Boolean(favoriteNotice)}
+        autoHideDuration={3000}
+        onClose={() => setFavoriteNotice(null)}
+        message={favoriteNotice?.message}
+      />
     </Box>
   );
 };

@@ -7,6 +7,7 @@ import TripDetailsPage from '../pages/TripDetailsPage';
 import EditTripPage from '../pages/EditTripPage';
 import InventoryPage from '../pages/InventoryPage';
 import VehicleDetailsPage from '../pages/VehicleDetailsPage';
+import FavoritesPage from '../pages/FavoritesPage';
 
 export const publicRoutes = [
   {
@@ -23,6 +24,10 @@ export const protectedRoutes = [
   {
     path: '/inventory',
     element: <InventoryPage />,
+  },
+  {
+    path: '/favorites',
+    element: <FavoritesPage />,
   },
   {
     path: '/vehicles/:id',

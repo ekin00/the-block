@@ -13,6 +13,7 @@ const VehicleCardList = ({
   paginationModel = { page: 0, pageSize: 10 },
   onPaginationModelChange,
   now,
+  userId,
   onOpenDetails,
   favoriteIds = [],
   compareIds = [],
@@ -25,6 +26,7 @@ const VehicleCardList = ({
         key={vehicle.id}
         vehicle={vehicle}
         now={now}
+        userId={userId}
         onOpenDetails={onOpenDetails}
         isFavorite={favoriteIds.includes(vehicle.id)}
         isCompared={compareIds.includes(vehicle.id)}

@@ -66,7 +66,12 @@ describe('VehicleGrid', () => {
     const headers = screen.getAllByRole('columnheader');
     const odometerIndex = headers.findIndex((header) => header.textContent === 'Odometer');
     expect(headers[odometerIndex + 1].textContent).toBe('Time left');
-    expect(headers[odometerIndex + 1].style.width).toBe('160px');
+    expect(headers[odometerIndex + 1].style.width).toBe('140px');
+  });
+
+  it('omits Favorite column by default in desktop mode', () => {
+    renderWithTheme(<VehicleGrid rows={mockRows} />);
+    expect(screen.queryByRole('columnheader', { name: 'Favorite' })).toBeNull();
   });
 
   it('renders server-slice rows with correct cell values', () => {
@@ -174,6 +179,7 @@ describe('VehicleGrid', () => {
       <VehicleGrid
         rows={mockRows}
         rowCount={50}
+        showFavorite
         paginationModel={{ page: 0, pageSize: 25 }}
       />,
     );
@@ -193,6 +199,7 @@ describe('VehicleGrid', () => {
       <VehicleGrid
         rows={mockRows}
         rowCount={50}
+        showFavorite
         onToggleFavorite={onToggleFavorite}
         onToggleCompare={onToggleCompare}
         favoriteIds={['grid-v1']}
@@ -208,6 +215,22 @@ describe('VehicleGrid', () => {
     const compButton = screen.getAllByRole('button', { name: 'Add to comparison' })[0];
     fireEvent.click(compButton);
     expect(onToggleCompare).toHaveBeenCalledWith('grid-v1');
+  });
+
+  it('renders current bid with black font when user is not high bidder and success color with icon when user is high bidder', () => {
+    const rowsWithWinner = [
+      { ...mockRows[0], id: 'winner-1', current_winner_id: 42, current_bid: 25000 },
+      { ...mockRows[1], id: 'other-1', current_winner_id: 99, current_bid: 18000 },
+    ];
+    renderWithTheme(
+      <VehicleGrid
+        rows={rowsWithWinner}
+        userId="42"
+      />,
+    );
+
+    expect(screen.getByTestId('high-bidder-icon')).toBeTruthy();
+    expect(screen.getAllByTestId('high-bidder-icon')).toHaveLength(1);
   });
 
   it('delegates sorting to server via onSortModelChange and never sorts independently', () => {
