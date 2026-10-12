@@ -7,19 +7,19 @@ Run with the project venv:
 
 import os
 import sys
-import tempfile
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from uuid import uuid4
+from unittest.mock import patch
+
+from sqlalchemy.orm import Query
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-os.environ["DATABASE_URL"] = "sqlite:///" + os.path.join(
-    tempfile.mkdtemp(prefix="theblock_verify_"), "verify_api.db"
-).replace("\\", "/")
+os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 
 from app import app, db  # noqa: E402
-from models import AUCTION_DURATION_DAYS, User, TheBlock  # noqa: E402
+from models import AUCTION_DURATION_DAYS, BidTracker, User, TheBlock  # noqa: E402
 
 failures = 0
 
@@ -497,6 +497,142 @@ def main():
                         json={"theblock_id": v5.id, "amount": 9000}, headers=h3)
         check("bid equal to reserve_price -> reserve_met True",
               r.status_code == 201 and r.get_json()["reserve_met"] is True)
+
+        # --- buy now ---
+        buy_url = "/api/bid-tracker/buy-now"
+        purchasable = make_vehicle(buy_now_price=Decimal("12000.50"),
+                                   reserve_price=Decimal("12000.50"))
+        rebuyer = make_vehicle(buy_now_price=Decimal("15000"),
+                               reserve_price=Decimal("16000"), auction_end=None)
+        unavailable = make_vehicle()
+        buy_upcoming = make_vehicle(buy_now_price=Decimal("12000"),
+                                    auction_start=NOW + timedelta(days=1))
+        buy_ended = make_vehicle(buy_now_price=Decimal("12000"),
+                                 auction_end=NOW - timedelta(seconds=1))
+        buy_reached = make_vehicle(buy_now_price=Decimal("12000"),
+                                   current_bid=Decimal("12000"), bid_count=2)
+        buy_exceeded = make_vehicle(buy_now_price=Decimal("12000"),
+                                    current_bid=Decimal("13000"), bid_count=3)
+        db.session.commit()
+
+        r = client.post(buy_url, json={"theblock_id": purchasable.id})
+        check("buy now without X-User-Id -> 401", r.status_code == 401)
+        for label, payload in (("missing id", {}), ("blank id", {"theblock_id": " "}),
+                               ("non-string id", {"theblock_id": 42})):
+            r = client.post(buy_url, json=payload, headers=h1)
+            check(f"buy now {label} -> 400",
+                  r.status_code == 400
+                  and r.get_json() == {"error": "theblock_id is required."})
+        for label, raw in (("array", "[]"), ("null", "null"),
+                           ("malformed JSON", "{"), ("empty body", "")):
+            r = client.post(buy_url, data=raw, content_type="application/json", headers=h1)
+            check(f"buy now {label} -> 400",
+                  r.status_code == 400
+                  and r.get_json() == {"error": "A JSON request body is required."})
+        r = client.post(buy_url, json={"theblock_id": str(uuid4())}, headers=h1)
+        check("buy now unknown vehicle -> 404",
+              r.status_code == 404 and r.get_json() == {"error": "Vehicle not found."})
+
+        for label, vehicle, error in (
+            ("null price", unavailable, "Buy Now is not available for this vehicle."),
+            ("upcoming", buy_upcoming, "Auction has not started."),
+            ("ended", buy_ended, "Auction has ended."),
+            ("bid equals price", buy_reached,
+             "Buy Now is no longer available: the current bid has reached the Buy Now price."),
+            ("bid exceeds price", buy_exceeded,
+             "Buy Now is no longer available: the current bid has reached the Buy Now price."),
+        ):
+            r = client.post(buy_url, json={"theblock_id": vehicle.id}, headers=h1)
+            check(f"buy now {label} -> 422",
+                  r.status_code == 422 and r.get_json() == {"error": error})
+            check(f"buy now {label} creates no tracker",
+                  db.session.get(BidTracker, (alice.id, vehicle.id)) is None)
+
+        before = datetime.now(timezone.utc)
+        r = client.post(buy_url, json={"theblock_id": f" {purchasable.id} "}, headers=h1)
+        body = r.get_json()
+        db.session.refresh(purchasable)
+        check("buy now -> 201 exact response",
+              r.status_code == 201 and body == {
+                  "theblock_id": purchasable.id, "my_bid": 12000.50,
+                  "current_bid": 12000.50, "bid_count": 1, "status": "won",
+                  "reserve_met": True, "auction_end": purchasable.auction_end.isoformat(),
+                  "bought_now": True,
+              } and isinstance(body["my_bid"], float)
+              and isinstance(body["current_bid"], float))
+        check("buy now stores winner, price, count and UTC auction end",
+              purchasable.current_winner_id == alice.id
+              and purchasable.current_bid == purchasable.buy_now_price
+              and purchasable.bid_count == 1
+              and before <= purchasable.auction_end.replace(tzinfo=timezone.utc)
+              <= datetime.now(timezone.utc))
+        tracker = db.session.get(BidTracker, (alice.id, purchasable.id))
+        check("buy now creates tracker with purchase price",
+              tracker is not None and tracker.my_bid == purchasable.buy_now_price)
+        detail = client.get(f"/api/the-block/{purchasable.id}", headers=h1).get_json()
+        check("buy now auction_end uses vehicle detail format",
+              body.get("auction_end") == detail["auction_end"])
+        r = client.post("/api/bid-tracker",
+                        json={"theblock_id": purchasable.id, "amount": 13000}, headers=h2)
+        check("bid after buy now -> ended",
+              r.status_code == 422 and r.get_json() == {"error": "Auction has ended."})
+        r = client.post(buy_url, json={"theblock_id": purchasable.id}, headers=h2)
+        check("second buy now -> ended",
+              r.status_code == 422 and r.get_json() == {"error": "Auction has ended."})
+        db.session.refresh(purchasable)
+        check("rejected repeat purchase preserves winner and count",
+              purchasable.current_winner_id == alice.id and purchasable.bid_count == 1
+              and db.session.get(BidTracker, (bob.id, purchasable.id)) is None)
+
+        client.post("/api/bid-tracker",
+                    json={"theblock_id": rebuyer.id, "amount": 11000}, headers=h2)
+        r = client.post(buy_url, json={"theblock_id": rebuyer.id}, headers=h2)
+        db.session.refresh(rebuyer)
+        tracker_rows = BidTracker.query.filter_by(user_id=bob.id, theblock_id=rebuyer.id).all()
+        check("open-ended buy now overwrites existing tracker and increments bid count",
+              r.status_code == 201 and r.get_json()["reserve_met"] is False
+              and rebuyer.bid_count == 2 and rebuyer.current_winner_id == bob.id
+              and rebuyer.current_bid == Decimal("15000")
+              and len(tracker_rows) == 1 and tracker_rows[0].my_bid == Decimal("15000"))
+
+        # Change eligibility after the initial read, before the real SQLite claim UPDATE.
+        original_update = Query.update
+        for label, changes, error in (
+            ("ended", {TheBlock.auction_end: NOW.replace(tzinfo=None)},
+             "Auction has ended."),
+            ("upcoming", {TheBlock.auction_start: (NOW + timedelta(days=1)).replace(tzinfo=None)},
+             "Auction has not started."),
+            ("price removed", {TheBlock.buy_now_price: None},
+             "Buy Now is not available for this vehicle."),
+            ("price reached", {TheBlock.current_bid: Decimal("12000")},
+             "Buy Now is no longer available: the current bid has reached the Buy Now price."),
+        ):
+            raced = make_vehicle(buy_now_price=Decimal("12000"))
+            db.session.commit()
+            raced_id = raced.id
+            claim_counts = []
+
+            def competing_update(query, values, **kwargs):
+                original_update(TheBlock.query.filter_by(id=raced_id), changes,
+                                synchronize_session=False)
+                db.session.commit()
+                count = original_update(query, values, **kwargs)
+                claim_counts.append(count)
+                return count
+
+            with patch.object(Query, "update", competing_update):
+                r = client.post(buy_url, json={"theblock_id": raced_id}, headers=h1)
+            check(f"buy now lost claim re-reads {label} -> 422",
+                  claim_counts == [0] and r.status_code == 422
+                  and r.get_json() == {"error": error})
+            db.session.refresh(raced)
+            check(f"buy now lost claim {label} leaves no purchase",
+                  raced.bid_count == 0 and raced.current_winner_id is None
+                  and db.session.get(BidTracker, (alice.id, raced_id)) is None)
+
+        rule, args = app.url_map.bind("localhost").match(buy_url, method="POST")
+        check("POST buy-now resolves to buy route, not DELETE tracker route",
+              rule == "bid.buy_now" and args == {})
 
     return failures
 

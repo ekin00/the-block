@@ -10,6 +10,9 @@ MAX_COMPARISON_ITEMS = 3
 # auctions run this many days from auction_start; auction_end is derived at import
 AUCTION_DURATION_DAYS = 5
 
+# odometer_km is stored in km; odometer_mi is derived from it with this factor
+KM_TO_MI = 0.621371
+
 class User(db.Model):
 
     __tablename__ = "users"
@@ -77,6 +80,8 @@ class TheBlock(db.Model):
     transmission = db.Column(db.String(100), nullable=False)
     drivetrain = db.Column(db.String(50), nullable=False)
     odometer_km = db.Column(db.Integer, nullable=False)
+    # whole miles for U.S. display, derived from odometer_km (KM_TO_MI)
+    odometer_mi = db.Column(db.Integer, nullable=True)
     fuel_type = db.Column(db.String(50), nullable=False)
     condition_grade = db.Column(db.Float, nullable=False)
     condition_report = db.Column(db.Text, nullable=False)

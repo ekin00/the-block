@@ -13,7 +13,7 @@ from sqlalchemy import inspect
 from sqlalchemy.exc import IntegrityError
 
 from app import app, db
-from models import User, ComparisonItem, BidTracker
+from models import KM_TO_MI, User, ComparisonItem, BidTracker, TheBlock
 
 
 def try_insert(label, item):
@@ -74,8 +74,20 @@ def main():
         print(f"bid_tracker table exists: {'PASS' if 'bid_tracker' in tables else 'FAIL'}")
 
         theblock_cols = {c["name"] for c in inspector.get_columns("the_block")}
-        for col in ("auction_end", "current_winner_id"):
+        for col in ("auction_end", "current_winner_id", "odometer_mi"):
             print(f"the_block.{col} column: {'PASS' if col in theblock_cols else 'FAIL'}")
+
+        # Every imported row must carry the whole-mile conversion of odometer_km.
+        mismatches = [
+            v.vin
+            for v in TheBlock.query.all()
+            if v.odometer_mi != round(v.odometer_km * KM_TO_MI)
+        ]
+        total = TheBlock.query.count()
+        print(
+            f"odometer_mi = round(odometer_km * {KM_TO_MI}) on all {total} rows: "
+            f"{'PASS' if not mismatches else f'FAIL (mismatched VINs: {mismatches})'}"
+        )
 
         # Duplicate bid on the same (user, vehicle) -> composite PK must reject.
         g1 = User.query.filter_by(name="GUEST1").first()

@@ -7,11 +7,9 @@ import {
   Link,
   useNavigate,
   useParams,
-  useLocation,
 } from 'react-router-dom';
 import {
   Alert,
-  AppBar,
   Box,
   Button,
   Chip,
@@ -32,7 +30,6 @@ import {
   Snackbar,
   Stack,
   TextField,
-  Toolbar,
   Typography,
 } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -46,6 +43,9 @@ import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import { DataGrid } from '@mui/x-data-grid';
 import Tooltip from '@mui/material/Tooltip';
 import { useTheme } from '@mui/material/styles';
+import { useDemo, DemoProvider } from './context/DemoContext';
+import InventorySearchBar from './components/inventory/InventorySearchBar';
+import InventorySidebarFilter from './components/inventory/InventorySidebarFilter';
 
 const MAX_COMPARE = 3;
 
@@ -61,9 +61,12 @@ const rows = [
     drivetrain: 'AWD',
     transmission: '8-Speed Automatic',
     mileage: '14,200 mi',
+    odometer: 14200,
+    fuel_type: 'Gasoline',
     exterior_color: 'Dark Moss',
     interior_color: 'Black Leather',
     title_status: 'Clean (ON)',
+    title_type: 'Clean Title',
     location: 'Mississauga, ON',
     seller: 'Apex Fleet Sales',
     seller_type: 'Dealer',
@@ -96,9 +99,12 @@ const rows = [
     drivetrain: 'FWD',
     transmission: '6-Speed Manual',
     mileage: '58,300 mi',
+    odometer: 58300,
+    fuel_type: 'Gasoline',
     exterior_color: 'Tornado Red',
     interior_color: 'Titan Black Tartan',
     title_status: 'Clean (NY)',
+    title_type: 'Clean Title',
     location: 'Farmingville, NY 11738',
     seller: 'Paul_V',
     seller_type: 'Private Party',
@@ -131,9 +137,12 @@ const rows = [
     drivetrain: 'AWD',
     transmission: '9-Speed Automatic',
     mileage: '18,900 mi',
+    odometer: 18900,
+    fuel_type: 'Gasoline',
     exterior_color: 'Ebony Twilight Metallic',
     interior_color: 'Jet Black',
     title_status: 'Clean (ON)',
+    title_type: 'Clean Title',
     location: 'Toronto, ON',
     seller: 'NorthStar Fleet',
     seller_type: 'Dealer',
@@ -166,9 +175,12 @@ const rows = [
     drivetrain: 'FWD',
     transmission: 'Intelligent Variable (IVT)',
     mileage: '8,400 mi',
+    odometer: 8400,
+    fuel_type: 'Gasoline',
     exterior_color: 'Gravity Grey',
     interior_color: 'Black Cloth',
     title_status: 'Clean (QC)',
+    title_type: 'Clean Title',
     location: 'Montreal, QC',
     seller: 'Metro Auto Wholesale',
     seller_type: 'Dealer',
@@ -188,8 +200,224 @@ const rows = [
       'https://placehold.co/800x600/1e293b/eaeaea?text=2024+Kia+Forte+Cabin',
       'https://placehold.co/800x600/0f172a/eaeaea?text=2024+Kia+Forte+Instrument+Cluster'
     ],
+  },
+  {
+    id: 'toyota-camry-2023-01',
+    vin: '4T1B11HK5PU789214',
+    make: 'Toyota',
+    model: 'Camry',
+    year: 2023,
+    body_style: 'Sedan',
+    engine: '2.5L 4-Cylinder DOHC',
+    drivetrain: 'FWD',
+    transmission: '8-Speed Automatic',
+    mileage: '32,100 mi',
+    odometer: 32100,
+    fuel_type: 'Gasoline',
+    exterior_color: 'Celestial Silver Metallic',
+    interior_color: 'Ash Fabric',
+    title_status: 'Clean Title (ON)',
+    title_type: 'Clean Title',
+    location: 'London, ON',
+    seller: 'Toyota Certified Pre-Owned',
+    seller_type: 'Dealer',
+    comments_count: 24,
+    condition_grade: 4.5,
+    condition_report:
+      'One owner vehicle. Regularly serviced at authorized dealer. Excellent mechanical condition and spotless interior.',
+    auction_start: '2026-10-06T11:00:00',
+    auction_end: '2026-10-13T16:00:00',
+    starting_bid: 16000,
+    reserve_price: 22000,
+    buy_now_price: 25500,
+    current_bid: 21500,
+    bid_count: 14,
+    images: [
+      'https://placehold.co/800x600/1a1a2e/eaeaea?text=2023+Toyota+Camry+Front',
+      'https://placehold.co/800x600/1e293b/eaeaea?text=2023+Toyota+Camry+Side',
+      'https://placehold.co/800x600/0f172a/eaeaea?text=2023+Toyota+Camry+Interior'
+    ],
+  },
+  {
+    id: 'toyota-corolla-2022-02',
+    vin: 'JTDE4MBE8NJ091244',
+    make: 'Toyota',
+    model: 'Corolla',
+    year: 2022,
+    body_style: 'Sedan',
+    engine: '1.8L 4-Cylinder DOHC',
+    drivetrain: 'FWD',
+    transmission: 'Automatic',
+    mileage: '41,500 mi',
+    odometer: 41500,
+    fuel_type: 'Gasoline',
+    exterior_color: 'Blueprint',
+    interior_color: 'Black Cloth',
+    title_status: 'Clean Title (ON)',
+    title_type: 'Clean Title',
+    location: 'Oakville, ON',
+    seller: 'Lakeside Auto',
+    seller_type: 'Dealer',
+    comments_count: 12,
+    condition_grade: 4.1,
+    condition_report:
+      'Clean title, no accidents reported. Fresh oil change and brake pads inspected.',
+    auction_start: '2026-10-07T10:00:00',
+    auction_end: '2026-10-14T14:00:00',
+    starting_bid: 13000,
+    reserve_price: 18000,
+    buy_now_price: 21000,
+    current_bid: 17500,
+    bid_count: 9,
+    images: [
+      'https://placehold.co/800x600/1a1a2e/eaeaea?text=2022+Toyota+Corolla+Front',
+      'https://placehold.co/800x600/1e293b/eaeaea?text=2022+Toyota+Corolla+Interior'
+    ],
+  },
+  {
+    id: 'toyota-rav4-2024-03',
+    vin: '2T3P1RFV5RW198302',
+    make: 'Toyota',
+    model: 'RAV4',
+    year: 2024,
+    body_style: 'SUV',
+    engine: '2.5L 4-Cylinder',
+    drivetrain: 'AWD',
+    transmission: '8-Speed Automatic',
+    mileage: '12,800 mi',
+    odometer: 12800,
+    fuel_type: 'Gasoline',
+    exterior_color: 'Magnetic Gray Metallic',
+    interior_color: 'Black SofTex',
+    title_status: 'Clean Title (BC)',
+    title_type: 'Clean Title',
+    location: 'Vancouver, BC',
+    seller: 'Pacific Motors',
+    seller_type: 'Dealer',
+    comments_count: 31,
+    condition_grade: 4.7,
+    condition_report:
+      'Like-new condition. All-wheel drive, technology package included. Full factory warranty remaining.',
+    auction_start: '2026-10-05T12:00:00',
+    auction_end: '2026-10-12T18:00:00',
+    starting_bid: 22000,
+    reserve_price: 31000,
+    buy_now_price: 34500,
+    current_bid: 29800,
+    bid_count: 18,
+    images: [
+      'https://placehold.co/800x600/1a1a2e/eaeaea?text=2024+Toyota+RAV4+Front',
+      'https://placehold.co/800x600/1e293b/eaeaea?text=2024+Toyota+RAV4+Rear'
+    ],
+  },
+  {
+    id: 'mazda-cx5-2025-04',
+    vin: 'JM3KFBCM9R0123982',
+    make: 'Mazda',
+    model: 'CX-5',
+    year: 2025,
+    body_style: 'SUV',
+    engine: '2.5L Turbo I4',
+    drivetrain: 'AWD',
+    transmission: 'Automatic',
+    mileage: '15,200 mi',
+    odometer: 15200,
+    fuel_type: 'Gasoline',
+    exterior_color: 'Soul Red Crystal',
+    interior_color: 'Parchment Leather',
+    title_status: 'Clean Title (ON)',
+    title_type: 'Clean Title',
+    location: 'Mississauga, ON',
+    seller: 'Metro Fleet',
+    seller_type: 'Dealer',
+    comments_count: 19,
+    condition_grade: 4.4,
+    condition_report:
+      'Very well maintained, garage kept, full service history.',
+    auction_start: '2026-10-06T10:00:00',
+    auction_end: '2026-10-13T15:30:00',
+    starting_bid: 19500,
+    reserve_price: 27000,
+    buy_now_price: 30000,
+    current_bid: 26000,
+    bid_count: 11,
+    images: [
+      'https://placehold.co/800x600/1a1a2e/eaeaea?text=2025+Mazda+CX-5+Front'
+    ],
+  },
+  {
+    id: 'ford-f150-2022-05',
+    vin: '1FTFW1ED4NFC92011',
+    make: 'Ford',
+    model: 'F-150',
+    year: 2022,
+    body_style: 'Truck',
+    engine: '3.5L EcoBoost V6',
+    drivetrain: '4WD',
+    transmission: 'Automatic',
+    mileage: '48,000 mi',
+    odometer: 48000,
+    fuel_type: 'Gasoline',
+    exterior_color: 'Oxford White',
+    interior_color: 'Medium Dark Slate',
+    title_status: 'Non Repairable',
+    title_type: 'Non Repairable',
+    location: 'Calgary, AB',
+    seller: 'Western Recovery',
+    seller_type: 'Fleet',
+    comments_count: 15,
+    condition_grade: 1.8,
+    condition_report:
+      'Severe front impact damage. Sold for parts or scrap dismantling only.',
+    auction_start: '2026-10-04T09:00:00',
+    auction_end: '2026-10-11T14:00:00',
+    starting_bid: 5000,
+    reserve_price: 9000,
+    buy_now_price: 12000,
+    current_bid: 8200,
+    bid_count: 12,
+    images: [
+      'https://placehold.co/800x600/1a1a2e/eaeaea?text=2022+Ford+F-150+Front'
+    ],
+  },
+  {
+    id: 'chevrolet-equinox-2021-06',
+    vin: '3GNAXKEV8MS194830',
+    make: 'Chevrolet',
+    model: 'Equinox',
+    year: 2021,
+    body_style: 'SUV',
+    engine: '1.5L Turbo 4-Cylinder',
+    drivetrain: 'AWD',
+    transmission: 'Automatic',
+    mileage: '62,000 mi',
+    odometer: 62000,
+    fuel_type: 'Gasoline',
+    exterior_color: 'Mosaic Black',
+    interior_color: 'Jet Black',
+    title_status: 'Salvage Title (QC)',
+    title_type: 'Salvage Title',
+    location: 'Laval, QC',
+    seller: 'Direct Auction Rebuilders',
+    seller_type: 'Dealer',
+    comments_count: 22,
+    condition_grade: 2.2,
+    condition_report:
+      'Rear quarter panel damage repaired. Frame measured straight, needs final inspection.',
+    auction_start: '2026-10-05T13:00:00',
+    auction_end: '2026-10-12T17:00:00',
+    starting_bid: 7000,
+    reserve_price: 11000,
+    buy_now_price: 14000,
+    current_bid: 9500,
+    bid_count: 7,
+    images: [
+      'https://placehold.co/800x600/1a1a2e/eaeaea?text=2021+Chevy+Equinox+Front'
+    ],
   }
 ];
+
+
 
 function FavoriteCell({ vehicleId, favorites, toggleFavorite }) {
   const isFavorite = favorites.includes(vehicleId);
@@ -274,7 +502,15 @@ function CompareCell({ vehicleId, compare, toggleCompare }) {
   );
 }
 
-function VehicleGrid({ favorites, toggleFavorite, compare, toggleCompare, base }) {
+function VehicleGrid({
+  dataRows = rows,
+  favorites,
+  toggleFavorite,
+  compare,
+  toggleCompare,
+  base,
+  showActions = true,
+}) {
   const navigate = useNavigate();
   const [menu, setMenu] = React.useState(null);
   // Keep the short delay for ordinary row clicks so a double-click can open details.
@@ -288,14 +524,14 @@ function VehicleGrid({ favorites, toggleFavorite, compare, toggleCompare, base }
     [],
   );
 
-  const selectedVehicle = menu ? rows.find((row) => row.id === menu.vehicleId) : null;
+  const selectedVehicle = menu ? dataRows.find((row) => row.id === menu.vehicleId) : null;
 
   const columns = React.useMemo(
     () => [
       {
         field: 'compareAction',
         headerName: 'Compare',
-        width: 100,
+        width: 95,
         sortable: false,
         filterable: false,
         align: 'center',
@@ -308,23 +544,98 @@ function VehicleGrid({ favorites, toggleFavorite, compare, toggleCompare, base }
           />
         ),
       },
-      { field: 'make', headerName: 'Make', width: 150 },
+      {
+        field: 'make',
+        headerName: 'Make',
+        width: 130,
+        renderCell: (params) => (
+          <Typography variant="body2" sx={{ fontWeight: 600 }}>
+            {params.value}
+          </Typography>
+        ),
+      },
       {
         field: 'model',
         headerName: 'Model',
-        minWidth: 170,
+        minWidth: 150,
         flex: 1,
         renderCell: (params) => (
           <Tooltip title={params.row.condition_report || 'No report available'} arrow>
-            <span style={{ cursor: 'pointer' }}>{params.value}</span>
+            <span style={{ cursor: 'pointer', fontWeight: 500 }}>{params.value}</span>
           </Tooltip>
         ),
       },
-      { field: 'year', headerName: 'Year', type: 'number', width: 100 },
+      {
+        field: 'year',
+        headerName: 'Year',
+        type: 'number',
+        width: 90,
+        align: 'center',
+        headerAlign: 'center',
+      },
+      {
+        field: 'body_style',
+        headerName: 'body_style',
+        width: 125,
+        renderCell: (params) => (
+          <Chip
+            label={params.value || 'N/A'}
+            size="small"
+            variant="outlined"
+            sx={{
+              fontSize: '0.75rem',
+              height: 24,
+              borderColor: 'divider',
+              textTransform: 'capitalize',
+            }}
+          />
+        ),
+      },
+      {
+        field: 'odometer',
+        headerName: 'Odometer',
+        width: 125,
+        align: 'right',
+        headerAlign: 'right',
+        renderCell: (params) => {
+          const miles =
+            params.row.odometer ??
+            (params.row.mileage
+              ? parseInt(String(params.row.mileage).replace(/[^0-9]/g, ''), 10)
+              : null);
+          return (
+            <Typography variant="body2" sx={{ fontVariantNumeric: 'tabular-nums' }}>
+              {miles != null && !isNaN(miles) ? `${miles.toLocaleString()} mi` : '—'}
+            </Typography>
+          );
+        },
+      },
+      {
+        field: 'current_bid',
+        headerName: 'current_id',
+        width: 130,
+        align: 'right',
+        headerAlign: 'right',
+        renderCell: (params) => {
+          const bid = params.row.current_bid ?? params.row.starting_bid;
+          return (
+            <Typography
+              variant="body2"
+              sx={{
+                fontWeight: 700,
+                color: 'success.main',
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
+              {bid != null ? `$${bid.toLocaleString()}` : '—'}
+            </Typography>
+          );
+        },
+      },
       {
         field: 'favorite',
         headerName: 'Favorite',
-        width: 110,
+        width: 95,
         sortable: false,
         filterable: false,
         align: 'center',
@@ -337,8 +648,40 @@ function VehicleGrid({ favorites, toggleFavorite, compare, toggleCompare, base }
           />
         ),
       },
+      ...(showActions
+        ? [
+          {
+            field: 'actions',
+            headerName: 'Actions',
+            width: 110,
+            sortable: false,
+            filterable: false,
+            align: 'center',
+            headerAlign: 'center',
+            renderCell: (params) => (
+              <Button
+                size="small"
+                variant="outlined"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  navigate(`${base}/vehicles/${params.row.id}`);
+                }}
+                sx={{
+                  borderRadius: 1.5,
+                  textTransform: 'none',
+                  fontSize: '0.75rem',
+                  py: 0.25,
+                  px: 1,
+                }}
+              >
+                Details
+              </Button>
+            ),
+          },
+        ]
+        : []),
     ],
-    [compare, favorites, toggleCompare, toggleFavorite],
+    [base, compare, favorites, navigate, showActions, toggleCompare, toggleFavorite],
   );
 
   return (
@@ -346,7 +689,7 @@ function VehicleGrid({ favorites, toggleFavorite, compare, toggleCompare, base }
       <Paper
         variant="outlined"
         sx={{
-          height: 430,
+          height: 480,
           width: '100%',
           overflow: 'hidden',
           borderRadius: 2,
@@ -355,7 +698,7 @@ function VehicleGrid({ favorites, toggleFavorite, compare, toggleCompare, base }
         }}
       >
         <DataGrid
-          rows={rows}
+          rows={dataRows}
           columns={columns}
           onRowClick={(params, event) => {
             if (clickTimer.current) clearTimeout(clickTimer.current);
@@ -419,34 +762,34 @@ function VehicleGrid({ favorites, toggleFavorite, compare, toggleCompare, base }
       >
         {selectedVehicle
           ? [
-              <MenuItem
-                key="favorite"
-                onClick={() => {
-                  toggleFavorite(selectedVehicle.id);
-                  setMenu(null);
-                }}
-              >
-                <ListItemIcon>
-                  {favorites.includes(selectedVehicle.id) ? (
-                    <FavoriteIcon fontSize="small" sx={{ color: 'error.main' }} />
-                  ) : (
-                    <FavoriteBorderIcon fontSize="small" />
-                  )}
-                </ListItemIcon>
-                <ListItemText>
-                  {favorites.includes(selectedVehicle.id) ? 'Remove Favorite' : 'Save Favorite'}
-                </ListItemText>
-              </MenuItem>,
-              <MenuItem
-                key="details"
-                onClick={() => {
-                  navigate(`${base}/vehicles/${selectedVehicle.id}`);
-                  setMenu(null);
-                }}
-              >
-                <ListItemText inset>See Details</ListItemText>
-              </MenuItem>,
-            ]
+            <MenuItem
+              key="favorite"
+              onClick={() => {
+                toggleFavorite(selectedVehicle.id);
+                setMenu(null);
+              }}
+            >
+              <ListItemIcon>
+                {favorites.includes(selectedVehicle.id) ? (
+                  <FavoriteIcon fontSize="small" sx={{ color: 'error.main' }} />
+                ) : (
+                  <FavoriteBorderIcon fontSize="small" />
+                )}
+              </ListItemIcon>
+              <ListItemText>
+                {favorites.includes(selectedVehicle.id) ? 'Remove Favorite' : 'Save Favorite'}
+              </ListItemText>
+            </MenuItem>,
+            <MenuItem
+              key="details"
+              onClick={() => {
+                navigate(`${base}/vehicles/${selectedVehicle.id}`);
+                setMenu(null);
+              }}
+            >
+              <ListItemText inset>See Details</ListItemText>
+            </MenuItem>,
+          ]
           : []}
       </Menu>
     </>
@@ -454,104 +797,307 @@ function VehicleGrid({ favorites, toggleFavorite, compare, toggleCompare, base }
 }
 
 function HomePage({ favorites, toggleFavorite, compare, toggleCompare, base }) {
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [filters, setFilters] = React.useState({
+    excludePurpleWave: false,
+    titleType: [],
+    odometer: [0, 250000],
+    year: [],
+    condition: [],
+    vehicleType: [],
+    make: [],
+    model: [],
+    engine: [],
+    transmission: [],
+    fuelType: [],
+    drivetrain: [],
+  });
+
+  const handleFilterChange = (field, value) => {
+    setFilters((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleResetSection = (sectionKey) => {
+    if (sectionKey === 'odometer') {
+      setFilters((prev) => ({ ...prev, odometer: [0, 250000] }));
+    } else {
+      setFilters((prev) => ({ ...prev, [sectionKey]: [] }));
+    }
+  };
+
+  const handleResetAll = () => {
+    setSearchQuery('');
+    setFilters({
+      excludePurpleWave: false,
+      titleType: [],
+      odometer: [0, 250000],
+      year: [],
+      condition: [],
+      vehicleType: [],
+      make: [],
+      model: [],
+      engine: [],
+      transmission: [],
+      fuelType: [],
+      drivetrain: [],
+    });
+  };
+
+  // Autocomplete search suggestions matching screenshot ("toyota camry", "toyota corolla", etc.)
+  const searchSuggestions = React.useMemo(() => {
+    const list = [
+      'toyota camry',
+      'toyota corolla',
+      'toyota rav4',
+      'kia telluride',
+      'volkswagen golf gti',
+      'gmc terrain',
+      'kia forte',
+      'mazda cx-5',
+      'chevrolet equinox',
+      'ford f-150',
+    ];
+    rows.forEach((r) => {
+      list.push(`${r.make} ${r.model}`.toLowerCase());
+      list.push(r.make.toLowerCase());
+      list.push(r.model.toLowerCase());
+    });
+    return Array.from(new Set(list));
+  }, []);
+
+  // Filter rows dynamically based on search & sidebar filters
+  const filteredRows = React.useMemo(() => {
+    return rows.filter((row) => {
+      // 1. Search Query
+      if (searchQuery.trim()) {
+        const q = searchQuery.trim().toLowerCase();
+        const searchable = `${row.year} ${row.make} ${row.model} ${row.vin} ${row.body_style}`.toLowerCase();
+        const words = q.split(/\s+/);
+        const matchesAll = words.every((word) => searchable.includes(word));
+        if (!matchesAll) return false;
+      }
+
+      // 2. Exclude Purple Wave
+      if (filters.excludePurpleWave) {
+        if ((row.seller || '').toLowerCase().includes('purple wave')) return false;
+      }
+
+      // 3. Title type
+      if (filters.titleType && filters.titleType.length > 0) {
+        const hasMatch = filters.titleType.some((t) => {
+          const title = (row.title_type || row.title_status || '').toLowerCase();
+          const cleanT = t.toLowerCase().replace(' title', '').trim();
+          return title.includes(cleanT);
+        });
+        if (!hasMatch) return false;
+      }
+
+      // 4. Odometer
+      if (filters.odometer) {
+        const [minOdo, maxOdo] = filters.odometer;
+        const odo = row.odometer ?? parseInt(String(row.mileage || '0').replace(/[^0-9]/g, ''), 10);
+        if (odo < minOdo || (maxOdo < 250000 && odo > maxOdo)) return false;
+      }
+
+      // 5. Year
+      if (filters.year && filters.year.length > 0) {
+        if (!filters.year.includes(row.year)) return false;
+      }
+
+      // 6. Condition
+      if (filters.condition && filters.condition.length > 0) {
+        const grade = row.condition_grade || 0;
+        const matches = filters.condition.some((c) => {
+          if (c === '4') return grade >= 4.0;
+          if (c === '3') return grade >= 3.0 && grade < 4.0;
+          if (c === '2') return grade >= 2.0 && grade < 3.0;
+          if (c === '1') return grade < 2.0;
+          return false;
+        });
+        if (!matches) return false;
+      }
+
+      // 7. Vehicle type
+      if (filters.vehicleType && filters.vehicleType.length > 0) {
+        if (!filters.vehicleType.map((v) => v.toLowerCase()).includes((row.body_style || '').toLowerCase())) {
+          return false;
+        }
+      }
+
+      // 8. Make
+      if (filters.make && filters.make.length > 0) {
+        if (!filters.make.map((m) => m.toLowerCase()).includes((row.make || '').toLowerCase())) {
+          return false;
+        }
+      }
+
+      // 9. Model
+      if (filters.model && filters.model.length > 0) {
+        if (!filters.model.map((m) => m.toLowerCase()).includes((row.model || '').toLowerCase())) {
+          return false;
+        }
+      }
+
+      // 10. Engine
+      if (filters.engine && filters.engine.length > 0) {
+        const eng = (row.engine || '').toLowerCase();
+        if (!filters.engine.some((e) => eng.includes(e.toLowerCase()))) return false;
+      }
+
+      // 11. Transmission
+      if (filters.transmission && filters.transmission.length > 0) {
+        const trans = (row.transmission || '').toLowerCase();
+        if (!filters.transmission.some((t) => trans.includes(t.toLowerCase()))) return false;
+      }
+
+      // 12. Fuel type
+      if (filters.fuelType && filters.fuelType.length > 0) {
+        const fuel = (row.fuel_type || 'Gasoline').toLowerCase();
+        if (!filters.fuelType.some((f) => fuel.includes(f.toLowerCase()))) return false;
+      }
+
+      // 13. Drivetrain
+      if (filters.drivetrain && filters.drivetrain.length > 0) {
+        if (!filters.drivetrain.includes(row.drivetrain)) return false;
+      }
+
+      return true;
+    });
+  }, [searchQuery, filters]);
+
+  // Check if any filter is active
+  const hasActiveFilters = Boolean(
+    searchQuery.trim() ||
+    filters.excludePurpleWave ||
+    (filters.titleType && filters.titleType.length > 0) ||
+    (filters.odometer && (filters.odometer[0] > 0 || filters.odometer[1] < 250000)) ||
+    (filters.year && filters.year.length > 0) ||
+    (filters.condition && filters.condition.length > 0) ||
+    (filters.vehicleType && filters.vehicleType.length > 0) ||
+    (filters.make && filters.make.length > 0) ||
+    (filters.model && filters.model.length > 0) ||
+    (filters.engine && filters.engine.length > 0) ||
+    (filters.transmission && filters.transmission.length > 0) ||
+    (filters.fuelType && filters.fuelType.length > 0) ||
+    (filters.drivetrain && filters.drivetrain.length > 0)
+  );
+
   return (
     <Box sx={{ width: '100%', py: { xs: 2, sm: 3 } }}>
-      <Stack spacing={1} sx={{ mb: 3 }}>
-        <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
-          Vehicle inventory
-        </Typography>
-        <Typography color="text.secondary">
-          Browse mock listings. Favorite and Compare can both be toggled directly in their columns.
-        </Typography>
-      </Stack>
-      <VehicleGrid
-        favorites={favorites}
-        toggleFavorite={toggleFavorite}
-        compare={compare}
-        toggleCompare={toggleCompare}
-        base={base}
-      />
+      <Grid container spacing={3} alignItems="flex-start">
+        {/* Left Column: Sidebar Filters */}
+        <Grid size={{ xs: 12, md: 4, lg: 3.2 }}>
+          <InventorySidebarFilter
+            filters={filters}
+            onFilterChange={handleFilterChange}
+            onResetSection={handleResetSection}
+            onResetAll={handleResetAll}
+          />
+        </Grid>
+
+        {/* Right Column: Search Bar & Inventory Table */}
+        <Grid size={{ xs: 12, md: 8, lg: 8.8 }}>
+          {/* Top Search Bar */}
+          <InventorySearchBar
+            value={searchQuery}
+            onChange={setSearchQuery}
+            onSearch={(query) => setSearchQuery(query)}
+            suggestions={searchSuggestions}
+            placeholder="Search by make, model, year, VIN..."
+          />
+
+          {/* Heading and listing stats */}
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            justifyContent="space-between"
+            alignItems={{ xs: 'flex-start', sm: 'center' }}
+            gap={1}
+            sx={{ mb: 2 }}
+          >
+            <Box>
+              <Typography variant="h4" fontWeight={700} sx={{ letterSpacing: '-0.02em' }}>
+                Vehicle inventory
+              </Typography>
+              <Typography color="text.secondary" variant="body2">
+                Browse mock listings. Favorite and Compare can both be toggled directly in their columns.
+              </Typography>
+            </Box>
+
+            {hasActiveFilters && (
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Chip
+                  label={`${filteredRows.length} of ${rows.length} shown`}
+                  size="small"
+                  color="primary"
+                  variant="outlined"
+                  sx={{ fontWeight: 600 }}
+                />
+                <Button
+                  size="small"
+                  onClick={handleResetAll}
+                  sx={{ textTransform: 'none', fontSize: '0.8rem', color: '#0055E5' }}
+                >
+                  Clear all
+                </Button>
+              </Stack>
+            )}
+          </Stack>
+
+          {/* Table */}
+          <VehicleGrid
+            dataRows={filteredRows}
+            favorites={favorites}
+            toggleFavorite={toggleFavorite}
+            compare={compare}
+            toggleCompare={toggleCompare}
+            base={base}
+          />
+        </Grid>
+      </Grid>
     </Box>
   );
 }
 
-function FavoritesPage({ favorites, toggleFavorite, base }) {
+function FavoritesPage({ favorites, toggleFavorite, compare, toggleCompare, base }) {
   const favoriteRows = rows.filter((row) => favorites.includes(row.id));
-  const navigate = useNavigate();
-
-  const columns = [
-    { field: 'make', headerName: 'Make', width: 150 },
-    { field: 'model', headerName: 'Model', minWidth: 170, flex: 1 },
-    { field: 'year', headerName: 'Year', type: 'number', width: 100 },
-    { field: 'vin', headerName: 'VIN', minWidth: 190, flex: 1 },
-    {
-      field: 'actions',
-      headerName: 'Actions',
-      width: 210,
-      sortable: false,
-      renderCell: (params) => (
-        <Stack direction="row" spacing={1}>
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={() => navigate(`${base}/vehicles/${params.row.id}`)}
-            sx={{ borderRadius: 1.5, textTransform: 'none' }}
-          >
-            Details
-          </Button>
-          <Button
-            size="small"
-            color="error"
-            variant="outlined"
-            onClick={() => toggleFavorite(params.row.id)}
-            sx={{ borderRadius: 1.5, textTransform: 'none' }}
-          >
-            Remove
-          </Button>
-        </Stack>
-      ),
-    },
-  ];
 
   return (
     <Box sx={{ width: '100%', py: { xs: 2, sm: 3 } }}>
-      <Typography variant="h4" fontWeight={700} sx={{ mb: 1, letterSpacing: '-0.02em' }}>
-        Favorites
-      </Typography>
-      <Typography color="text.secondary" sx={{ mb: 3 }}>
-        Your saved vehicles. The count in the navigation updates immediately.
-      </Typography>
-      {favoriteRows.length ? (
-        <Paper
-          variant="outlined"
-          sx={{
-            height: 380,
-            borderRadius: 2,
-            boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05)',
-            borderColor: 'divider',
-            overflow: 'hidden',
-          }}
-        >
-          <DataGrid
-            rows={favoriteRows}
-            columns={columns}
-            disableRowSelectionOnClick
-            pageSizeOptions={[5, 10]}
-            initialState={{ pagination: { paginationModel: { pageSize: 5, page: 0 } } }}
-            sx={{
-              border: 0,
-              '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: 'background.default',
-                borderBottom: '1px solid',
-                borderColor: 'divider',
-                fontWeight: 700,
-              },
-              '& .MuiDataGrid-row:hover': {
-                backgroundColor: 'rgba(0, 85, 229, 0.04)',
-              },
-            }}
+      <Stack
+        direction={{ xs: 'column', sm: 'row' }}
+        justifyContent="space-between"
+        alignItems={{ xs: 'flex-start', sm: 'center' }}
+        gap={1}
+        sx={{ mb: 3 }}
+      >
+        <Box>
+          <Typography variant="h4" fontWeight={700} sx={{ mb: 0.5, letterSpacing: '-0.02em' }}>
+            Favorites
+          </Typography>
+          <Typography color="text.secondary" variant="body2">
+            Your saved vehicles. The count in the navigation updates immediately.
+          </Typography>
+        </Box>
+        {favoriteRows.length > 0 && (
+          <Chip
+            icon={<FavoriteIcon sx={{ color: '#e53935 !important', fontSize: '1rem' }} />}
+            label={`${favoriteRows.length} saved`}
+            variant="outlined"
+            sx={{ fontWeight: 600, borderColor: 'divider' }}
           />
-        </Paper>
+        )}
+      </Stack>
+
+      {favoriteRows.length ? (
+        <VehicleGrid
+          dataRows={favoriteRows}
+          favorites={favorites}
+          toggleFavorite={toggleFavorite}
+          compare={compare}
+          toggleCompare={toggleCompare}
+          base={base}
+          showActions={true}
+        />
       ) : (
         <Paper variant="outlined" sx={{ p: 5, textAlign: 'center', borderRadius: 2, borderColor: 'divider' }}>
           <FavoriteBorderIcon sx={{ fontSize: 48, mb: 1.5, color: 'text.disabled' }} />
@@ -568,52 +1114,17 @@ function FavoritesPage({ favorites, toggleFavorite, base }) {
   );
 }
 
-function ComparePage({ compare, toggleCompare, base }) {
+function ComparePage({ favorites, toggleFavorite, compare, toggleCompare, base }) {
   const comparedRows = rows.filter((row) => compare.includes(row.id));
-  const navigate = useNavigate();
-
-  const columns = [
-    {
-      field: 'compareAction',
-      headerName: 'Compare',
-      width: 100,
-      sortable: false,
-      filterable: false,
-      align: 'center',
-      headerAlign: 'center',
-      renderCell: (params) => (
-        <CompareCell vehicleId={params.row.id} compare={compare} toggleCompare={toggleCompare} />
-      ),
-    },
-    { field: 'make', headerName: 'Make', width: 150 },
-    { field: 'model', headerName: 'Model', minWidth: 170, flex: 1 },
-    { field: 'year', headerName: 'Year', type: 'number', width: 100 },
-    {
-      field: 'details',
-      headerName: 'Details',
-      width: 120,
-      sortable: false,
-      renderCell: (params) => (
-        <Button
-          size="small"
-          variant="outlined"
-          onClick={() => navigate(`${base}/vehicles/${params.row.id}`)}
-          sx={{ borderRadius: 1.5, textTransform: 'none' }}
-        >
-          Details
-        </Button>
-      ),
-    },
-  ];
 
   return (
     <Box sx={{ width: '100%', py: { xs: 2, sm: 3 } }}>
-      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" gap={1} sx={{ mb: 3 }}>
+      <Stack direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'center' }} gap={1} sx={{ mb: 3 }}>
         <Box>
-          <Typography variant="h4" fontWeight={700} sx={{ mb: 1, letterSpacing: '-0.02em' }}>
+          <Typography variant="h4" fontWeight={700} sx={{ mb: 0.5, letterSpacing: '-0.02em' }}>
             Compare vehicles
           </Typography>
-          <Typography color="text.secondary">
+          <Typography color="text.secondary" variant="body2">
             Select up to {MAX_COMPARE} vehicles. Click the compare icon in the Compare column to remove one.
           </Typography>
         </Box>
@@ -625,37 +1136,17 @@ function ComparePage({ compare, toggleCompare, base }) {
           sx={{ alignSelf: { xs: 'flex-start', sm: 'center' }, fontWeight: 600 }}
         />
       </Stack>
+
       {comparedRows.length ? (
-        <Paper
-          variant="outlined"
-          sx={{
-            height: 380,
-            borderRadius: 2,
-            boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05)',
-            borderColor: 'divider',
-            overflow: 'hidden',
-          }}
-        >
-          <DataGrid
-            rows={comparedRows}
-            columns={columns}
-            disableRowSelectionOnClick
-            pageSizeOptions={[5, 10]}
-            initialState={{ pagination: { paginationModel: { pageSize: 5, page: 0 } } }}
-            sx={{
-              border: 0,
-              '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: 'background.default',
-                borderBottom: '1px solid',
-                borderColor: 'divider',
-                fontWeight: 700,
-              },
-              '& .MuiDataGrid-row:hover': {
-                backgroundColor: 'rgba(0, 85, 229, 0.04)',
-              },
-            }}
-          />
-        </Paper>
+        <VehicleGrid
+          dataRows={comparedRows}
+          favorites={favorites}
+          toggleFavorite={toggleFavorite}
+          compare={compare}
+          toggleCompare={toggleCompare}
+          base={base}
+          showActions={true}
+        />
       ) : (
         <Paper variant="outlined" sx={{ p: 5, textAlign: 'center', borderRadius: 2, borderColor: 'divider' }}>
           <CompareArrowsIcon sx={{ fontSize: 48, mb: 1.5, color: 'text.disabled' }} />
@@ -884,24 +1375,24 @@ function DetailsPage({ favorites, toggleFavorite, base }) {
               transition: 'all 0.2s ease',
               ...(isFavorite
                 ? {
-                    bgcolor: 'error.main',
-                    color: 'error.contrastText',
-                    borderColor: 'error.main',
-                    '&:hover': {
-                      bgcolor: 'error.dark',
-                      borderColor: 'error.dark',
-                    },
-                  }
+                  bgcolor: 'error.main',
+                  color: 'error.contrastText',
+                  borderColor: 'error.main',
+                  '&:hover': {
+                    bgcolor: 'error.dark',
+                    borderColor: 'error.dark',
+                  },
+                }
                 : {
-                    bgcolor: 'background.paper',
-                    color: 'text.secondary',
-                    borderColor: 'divider',
-                    '&:hover': {
-                      bgcolor: 'action.hover',
-                      color: 'text.primary',
-                      borderColor: 'text.secondary',
-                    },
-                  }),
+                  bgcolor: 'background.paper',
+                  color: 'text.secondary',
+                  borderColor: 'divider',
+                  '&:hover': {
+                    bgcolor: 'action.hover',
+                    color: 'text.primary',
+                    borderColor: 'text.secondary',
+                  },
+                }),
             }}
           >
             {isFavorite ? 'Favorited' : 'Save Favorite'}
@@ -1000,8 +1491,8 @@ function DetailsPage({ favorites, toggleFavorite, base }) {
                     vehicle.condition_grade >= 4.0
                       ? 'rgba(22, 101, 52, 0.9)'
                       : vehicle.condition_grade >= 2.5
-                      ? 'rgba(180, 83, 9, 0.9)'
-                      : 'rgba(185, 28, 28, 0.9)',
+                        ? 'rgba(180, 83, 9, 0.9)'
+                        : 'rgba(185, 28, 28, 0.9)',
                   backdropFilter: 'blur(4px)',
                   color: '#FFFFFF',
                   fontSize: '0.75rem',
@@ -1451,8 +1942,8 @@ function DetailsPage({ favorites, toggleFavorite, base }) {
                 vehicle.condition_grade >= 4.0
                   ? 'rgba(22, 163, 74, 0.08)'
                   : vehicle.condition_grade >= 2.5
-                  ? 'rgba(217, 119, 6, 0.08)'
-                  : 'rgba(220, 38, 38, 0.08)',
+                    ? 'rgba(217, 119, 6, 0.08)'
+                    : 'rgba(220, 38, 38, 0.08)',
               p: 1.5,
               borderRadius: 2,
               border: '1px solid',
@@ -1460,8 +1951,8 @@ function DetailsPage({ favorites, toggleFavorite, base }) {
                 vehicle.condition_grade >= 4.0
                   ? 'rgba(22, 163, 74, 0.2)'
                   : vehicle.condition_grade >= 2.5
-                  ? 'rgba(217, 119, 6, 0.2)'
-                  : 'rgba(220, 38, 38, 0.2)',
+                    ? 'rgba(217, 119, 6, 0.2)'
+                    : 'rgba(220, 38, 38, 0.2)',
             }}
           >
             <Box>
@@ -1477,8 +1968,8 @@ function DetailsPage({ favorites, toggleFavorite, base }) {
                     vehicle.condition_grade >= 4.0
                       ? 'success.main'
                       : vehicle.condition_grade >= 2.5
-                      ? 'warning.main'
-                      : 'error.main',
+                        ? 'warning.main'
+                        : 'error.main',
                 }}
               >
                 {vehicle.condition_grade} / 5.0
@@ -1509,7 +2000,7 @@ function DetailsPage({ favorites, toggleFavorite, base }) {
             borderColor: 'divider',
           }}
         >
- 
+
 
           <Typography sx={{ color: 'text.secondary', fontSize: '0.875rem', fontWeight: 500 }}>
             Ending {formatEndDate(vehicle.auction_end)}   anything to display ?
@@ -1612,194 +2103,18 @@ function DetailsPage({ favorites, toggleFavorite, base }) {
 }
 
 function AppLayout({ base = '' }) {
-  const [favorites, setFavorites] = React.useState([]);
-  const [compare, setCompare] = React.useState([]);
-  const [notice, setNotice] = React.useState('');
-  const location = useLocation();
+  const {
+    favorites,
+    compare,
+    notice,
+    toggleFavorite,
+    toggleCompare,
+    clearNotice
+  } = useDemo();
   const homePath = base || '/';
-
-  const toggleFavorite = React.useCallback((vehicleId) => {
-    setFavorites((current) =>
-      current.includes(vehicleId)
-        ? current.filter((id) => id !== vehicleId)
-        : [...current, vehicleId],
-    );
-  }, []);
-
-  const toggleCompare = React.useCallback((vehicleId) => {
-    if (compare.includes(vehicleId)) {
-      setCompare((current) => current.filter((id) => id !== vehicleId));
-      setNotice('');
-      return;
-    }
-
-    if (compare.length >= MAX_COMPARE) {
-      setNotice(`You can compare up to ${MAX_COMPARE} vehicles. Remove one before adding another.`);
-      return;
-    }
-
-    setCompare((current) => (current.includes(vehicleId) ? current : [...current, vehicleId]));
-    setNotice('');
-  }, [compare]);
 
   return (
     <Box sx={{ width: '100%' }}>
-      <AppBar
-        position="static"
-        color="default"
-        elevation={0}
-        sx={{
-          bgcolor: 'background.paper',
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 2,
-          boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05)',
-          mb: 3,
-          overflow: 'hidden',
-        }}
-      >
-        <Toolbar
-          sx={{
-            gap: { xs: 1, sm: 2 },
-            flexWrap: 'wrap',
-            px: { xs: 2, sm: 3 },
-            minHeight: { xs: 56, sm: 60 },
-          }}
-        >
-          <Box
-            component={Link}
-            to={homePath}
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.25,
-              textDecoration: 'none',
-              mr: 'auto',
-            }}
-          >
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 800,
-                color: 'text.primary',
-                letterSpacing: '-0.02em',
-              }}
-            >
-              The Block
-            </Typography>
-            <Chip
-              label="DEMO"
-              size="small"
-              sx={{
-                bgcolor: 'primary.main',
-                color: '#fff',
-                fontWeight: 700,
-                fontSize: '0.65rem',
-                height: 20,
-                borderRadius: 1,
-                letterSpacing: '0.05em',
-              }}
-            />
-          </Box>
-
-          <Button
-            component={Link}
-            to={homePath}
-            sx={{
-              fontWeight: location.pathname === homePath ? 700 : 500,
-              color: location.pathname === homePath ? 'primary.main' : 'text.secondary',
-              borderBottom: location.pathname === homePath ? '2px solid' : '2px solid transparent',
-              borderColor: location.pathname === homePath ? 'primary.main' : 'transparent',
-              borderRadius: 0,
-              px: 1.5,
-              py: 1,
-              textTransform: 'none',
-              fontSize: '0.925rem',
-              '&:hover': {
-                bgcolor: 'rgba(0, 85, 229, 0.04)',
-                color: 'primary.main',
-              },
-            }}
-          >
-            Inventory
-          </Button>
-
-          <Button
-            component={Link}
-            to={`${base}/favorites`}
-            startIcon={
-              favorites.length > 0 ? (
-                <FavoriteIcon sx={{ color: '#e53935', fontSize: '1.25rem' }} />
-              ) : (
-                <FavoriteBorderIcon sx={{ color: 'text.secondary', fontSize: '1.25rem' }} />
-              )
-            }
-            sx={{
-              fontWeight: location.pathname === `${base}/favorites` || favorites.length > 0 ? 700 : 500,
-              color:
-                favorites.length > 0
-                  ? '#d32f2f'
-                  : location.pathname === `${base}/favorites`
-                  ? 'primary.main'
-                  : 'text.secondary',
-              borderBottom: location.pathname === `${base}/favorites` ? '2px solid' : '2px solid transparent',
-              borderColor:
-                location.pathname === `${base}/favorites`
-                  ? favorites.length > 0
-                    ? '#d32f2f'
-                    : 'primary.main'
-                  : 'transparent',
-              borderRadius: 0,
-              px: 1.5,
-              py: 1,
-              textTransform: 'none',
-              fontSize: '0.925rem',
-              transition: 'all 0.2s ease',
-              '&:hover': {
-                bgcolor: favorites.length > 0 ? 'rgba(229, 57, 53, 0.08)' : 'rgba(0, 85, 229, 0.04)',
-                color: favorites.length > 0 ? '#d32f2f' : 'primary.main',
-              },
-            }}
-          >
-            Favorites ({favorites.length})
-          </Button>
-
-          <Button
-            component={Link}
-            to={`${base}/compare`}
-            startIcon={
-              <CompareArrowsIcon
-                sx={{
-                  color: compare.length > 0 ? 'primary.main' : 'text.secondary',
-                  fontSize: '1.25rem',
-                }}
-              />
-            }
-            sx={{
-              fontWeight: location.pathname === `${base}/compare` || compare.length > 0 ? 700 : 500,
-              color:
-                compare.length > 0
-                  ? 'primary.main'
-                  : location.pathname === `${base}/compare`
-                  ? 'primary.main'
-                  : 'text.secondary',
-              borderBottom: location.pathname === `${base}/compare` ? '2px solid' : '2px solid transparent',
-              borderColor: location.pathname === `${base}/compare` ? 'primary.main' : 'transparent',
-              borderRadius: 0,
-              px: 1.5,
-              py: 1,
-              textTransform: 'none',
-              fontSize: '0.925rem',
-              '&:hover': {
-                bgcolor: 'rgba(0, 85, 229, 0.04)',
-              },
-            }}
-          >
-            Compare ({compare.length}/{MAX_COMPARE})
-          </Button>
-        </Toolbar>
-      </AppBar>
-
       <Routes>
         <Route
           path="/"
@@ -1815,11 +2130,27 @@ function AppLayout({ base = '' }) {
         />
         <Route
           path="/favorites"
-          element={<FavoritesPage favorites={favorites} toggleFavorite={toggleFavorite} base={base} />}
+          element={
+            <FavoritesPage
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              compare={compare}
+              toggleCompare={toggleCompare}
+              base={base}
+            />
+          }
         />
         <Route
           path="/compare"
-          element={<ComparePage compare={compare} toggleCompare={toggleCompare} base={base} />}
+          element={
+            <ComparePage
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              compare={compare}
+              toggleCompare={toggleCompare}
+              base={base}
+            />
+          }
         />
         <Route path="/vehicles/:id" element={<DetailsPage favorites={favorites} toggleFavorite={toggleFavorite} base={base} />} />
         <Route
@@ -1836,10 +2167,10 @@ function AppLayout({ base = '' }) {
       <Snackbar
         open={Boolean(notice)}
         autoHideDuration={3500}
-        onClose={() => setNotice('')}
+        onClose={clearNotice}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert onClose={() => setNotice('')} severity="warning" variant="filled" sx={{ width: '100%' }}>
+        <Alert onClose={clearNotice} severity="warning" variant="filled" sx={{ width: '100%' }}>
           {notice}
         </Alert>
       </Snackbar>
@@ -1855,8 +2186,10 @@ export function DataGridDemoApp({ base = '' }) {
 
 export default function DataGridDemo() {
   return (
-    <BrowserRouter>
-      <AppLayout />
-    </BrowserRouter>
+    <DemoProvider>
+      <BrowserRouter>
+        <AppLayout />
+      </BrowserRouter>
+    </DemoProvider>
   );
 }

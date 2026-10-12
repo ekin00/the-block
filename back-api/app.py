@@ -14,7 +14,10 @@ from theblock_routes import theblock_bp
 from tracking_routes import tracking_bp
 from bid_routes import bid_bp
 
-load_dotenv()
+# Anchor .env lookup to this file's folder so it works no matter where
+# the process is launched from.
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 app = Flask(__name__)
 # hardcode as backup?
@@ -27,7 +30,7 @@ app.config["SQLALCHEMY_DATABASE_URI"] = database_url
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 # CORS configuration for the React frontend, only if .env didn't specify FRONTEND_URL otherwise default to 3000
-frontend_url = os.getenv("FRONTEND_URL", "http://localhost:3000")
+frontend_url = os.getenv("FRONTEND_URL", "http://localhost:5173")
 allowed_origins = [origin.strip() for origin in frontend_url.split(",") if origin.strip()]
 
 app.logger.info("CONFIG allowed_origins=%s", allowed_origins)
