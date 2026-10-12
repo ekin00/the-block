@@ -1,14 +1,8 @@
 # Submission
 
-Use this as a starting point for your repo's README in your fork of this challenge.
-
-When you're finished, send the link to your repo to your contact at **OPENLANE**.
-
-Delete what you don't need, add what you want.
-
 ---
 
-# -The Block `
+# -The Block -
 
 ## How to Run
 
@@ -94,15 +88,20 @@ cd front-client
 
 ```
 
-execute npm, this will take few seconds
+Execute npm, this will take few seconds
 
 ```
 npm install
 
+```
+
+to start
+
+```
 npm run dev
 ```
 
-At the end you should see something like
+At the end should see something like:
 
 ```
 VITE v6.4.4  ready in 423 ms
@@ -115,7 +114,9 @@ VITE v6.4.4  ready in 423 ms
 
 Use http://localhost:5173 as starting point
 
-## to rerun
+## to rerun with clean data
+
+Here I assumed you active venv
 
 ```
 .\venv\Scripts\python.exe reset_db.py
@@ -124,9 +125,10 @@ Use http://localhost:5173 as starting point
 
 ## Time Spent
 
-Roughly how much time you spent and how you approached the time box.
+### Roughly how much time you spent and how you approached the time box.
+
 ~10 hr
-Wed-Thursday looking at car auction website, test ux
+Wed-Thursday looking at car auction website, test ux, built protype
 Friday api
 Sat-Sun client
 
@@ -134,16 +136,14 @@ Sat-Sun client
 
 ### What you intentionally included, skipped, or simplified.
 
-I was deeply impressed by how effectively AI handled the search and filter functionality, which allowed me to focus entirely on the table's user experience and components/inventory/VehicleGrid.jsx was reused in Favorites. The data fits perfectly into a table layout. Users can click a row to either favorite an item or view its details, and double-clicking a vehicle cell opens the details view instantly. In the vehicles detail page, I added tooltip in "VIN . Grade . Title status" to jump down to Condition report.
+I was deeply impressed by how effectively AI handled the search and filter functionality, there are more but that piece had me worried. This allowed me to focus more on the table's user experience. The data fits perfectly into a table layout. Users can click a row to either favorite an item or view its details, and double-clicking a vehicle cell opens the details view instantly. In the vehicles detail page, I added tooltip in "VIN . Grade . Title status" to jump down to Condition report. During th the planning stage I made sure components/inventory/VehicleGrid.jsx was reused in Favorites.
 
-While I initially start with feature toggles for favorites and compared in mind, but I ultimately shifted my focus toward polishing the overall UX.
-
-I had to skip the comparison feature, it's disable on the left most column. But the favorites page serves a similar purpose, even if it doesn't allow for a side-by-side comparison."
+Although I initially planned to implement Favorites and Compare with feature toggles, I ultimately shifted my focus toward refining the overall user experience. As a result, I had to leave the comparison feature unimplemented, with the Compare option disabled in the leftmost column. The Favorites page, however, serves a similar purpose by allowing users to save and revisit vehicles, even though it doesn't support side-by-side comparisons.
 
 ## Stack
 
 - **Frontend:**
-  - vite, vitest
+  - vite
   - react 19
   - emotion/react
   - mui 7 + x-data-grid
@@ -168,7 +168,7 @@ To get a better sense of what was possible, I downloaded sample code from MUI an
 
 AI helped me turn the code challenge into a phased development plan, with clear tasks, acceptance criteria, and testing steps for each phase. At every stage, both AI and I reviewed the implementation, verified the behavior, and addressed issues before moving on.
 
-I found the grill-me, react-best-practices, and material-ui-review skills especially useful. They helped AI and me to challenge assumptions, review the React architecture, catch potential issues, and validate the MUI implementation.
+I found the grill-me, react-best-practices, and material-ui-review skills especially useful. They helped AI and me to catch potential issues in planning, and validate the MUI implementation.
 
 The result was a working React/MUI prototype with hardcoded vehicle data, interactive Favorite and Compare features, and a foundation for exploring the car auction experience. More importantly, I had a structured process for moving from an initial idea to a functional demo, with AI assisting in both development and verification rather than simply generating code.
 
@@ -176,7 +176,7 @@ The result was a working React/MUI prototype with hardcoded vehicle data, intera
 
 ### What choices did you make and why? What tradeoffs did you consider?
 
-I used the GitHub Planventure sample project as my starting point, since it already had most of the tech stack I needed. I considered TanStack Table, but decided that MUI X Data Grid Community Edition offered the functionality I needed without adding another library.
+I used the GitHub Planventure sample project as my starting point, I was already practice with it. This sample project had most of the tech stack I needed. For the table, I considered TanStack Table, but decided that MUI X Data Grid Community Edition offered the functionality I needed without adding another library.
 
 I used GitHub Copilot because it’s the AI tool I work with professionally. It also gives me the opportunity to experiment with different LLMs such as Kimi.
 
@@ -184,8 +184,16 @@ I used GitHub Copilot because it’s the AI tool I work with professionally. It 
 
 ## What you tested and how.
 
-Test at every phases using vitest, playwright mcp and shared browser.  
-The backend has its own test ./back-api/verify/ there is AGENTS.md to guide the AI and myself.
+Known there is not much time, setup repeatable test and enable AI to test and verify is paramount.
+
+Test at every phases using:
+
+- Chrome, F2 to test mobile
+- vitest
+- playwright mcp; this seems to take lots of token, I didn't had chance to measure in meanful way. Or setup locally is another option.
+- shared browser (vscode)
+- Bruno - mostly early api testing. Later AI just use [verify_api.py](/back-api/verify/verify_api.py)
+- The backend has its own test, see [AGENTS.md](/back-api/verify/AGENTS.md) to guide the AI to help verify.
 
 ## What I'd Do With More Time
 
