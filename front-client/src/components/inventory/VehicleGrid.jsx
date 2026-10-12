@@ -8,6 +8,7 @@ import {
   Menu,
   MenuItem,
   Paper,
+  TablePagination,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -164,8 +165,8 @@ const VehicleGrid = ({
     () => [
       {
         field: 'compareAction',
-        headerName: 'CF',
-        width: 60,
+        headerName: 'Compare',
+        width: 80,
         sortable: false,
         filterable: false,
         align: 'center',
@@ -183,7 +184,7 @@ const VehicleGrid = ({
         headerName: 'Year',
         type: 'number',
         valueFormatter: (value) => value == null ? '' : String(value),
-        width: 70,
+        width: 100,
         align: 'center',
         headerAlign: 'center',
         renderCell: (params) => (
@@ -194,6 +195,7 @@ const VehicleGrid = ({
         field: 'make',
         headerName: 'Make',
         width: 110,
+        flex: 1,
         renderCell: (params) => (
           <Typography variant="body2" sx={VEHICLE_TEXT_SX}>
             {params.value}
@@ -212,7 +214,8 @@ const VehicleGrid = ({
       {
         field: 'trim',
         headerName: 'Trim',
-        width: 100,
+        minWidth: 100,
+        flex: 1,
         renderCell: (params) => (
           <Typography variant="body2" sx={VEHICLE_TEXT_SX}>{params.value || 'N/A'}</Typography>
         ),
@@ -220,7 +223,8 @@ const VehicleGrid = ({
       {
         field: 'odometer_mi',
         headerName: 'Odometer',
-        width: 110,
+        minWidth: 120,
+        flex: 1,
         align: 'center',
         headerAlign: 'center',
         renderCell: (params) => {
@@ -228,7 +232,7 @@ const VehicleGrid = ({
           return (
             <Tooltip title={params.row.condition_report || 'No report available'} arrow>
               <Typography variant="body2" sx={VEHICLE_TEXT_SX}>
-                {Number.isFinite(miles) ? `${miles.toLocaleString()} mi` : '—'}
+                {Number.isFinite(miles) ? `${miles.toLocaleString()} mi` : '————'}
               </Typography>
             </Tooltip>
           );
@@ -238,6 +242,7 @@ const VehicleGrid = ({
         field: 'auction_end',
         headerName: 'Time left',
         width: 140,
+        flex: 1,
         renderCell: (params) => (
           <Box sx={{ display: 'inline-flex', alignItems: 'center', height: '100%' }}>
             <AuctionEndChip vehicle={params.row} now={now} />
@@ -257,13 +262,14 @@ const VehicleGrid = ({
               && String(params.row.current_winner_id) === String(userId))
             || params.row.is_winner
           );
+
           return (
             <Box
               sx={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 justifyContent: 'flex-end',
-                gap: 0.5,
+                gap: 1.0,
                 width: '100%',
               }}
             >
@@ -275,6 +281,7 @@ const VehicleGrid = ({
                   />
                 </Tooltip>
               )}
+
               <Typography
                 variant="body2"
                 sx={{
@@ -294,11 +301,27 @@ const VehicleGrid = ({
           {
             field: 'favorite',
             headerName: 'Favorite',
-            width: 95,
+            width: 90,
             sortable: false,
             filterable: false,
             align: 'center',
             headerAlign: 'center',
+            renderHeader: () => (
+              <Tooltip title="Favorite" arrow>
+                <Box
+                  component="span"
+                  sx={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: 'text.secondary',
+                  }}
+                  aria-label="Favorite"
+                >
+                  <FavoriteBorderIcon fontSize="small" />
+                </Box>
+              </Tooltip>
+            ),
             renderCell: (params) => (
               <FavoriteCell
                 vehicleId={params.row.id}
@@ -327,6 +350,28 @@ const VehicleGrid = ({
           boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.05)',
         }}
       >
+        {/* Same pager as the grid footer so users can change page from the top. */}
+        <TablePagination
+          component="div"
+          count={rowCount ?? rows.length}
+          page={paginationModel.page}
+          rowsPerPage={paginationModel.pageSize}
+          rowsPerPageOptions={PAGE_SIZE_OPTIONS}
+          onPageChange={(_, page) =>
+            onPaginationModelChange?.({ ...paginationModel, page })
+          }
+          onRowsPerPageChange={(event) =>
+            onPaginationModelChange?.({
+              page: 0,
+              pageSize: Number(event.target.value),
+            })
+          }
+          sx={{
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            '& .MuiTablePagination-toolbar': { minHeight: 44 },
+          }}
+        />
         <DataGrid
           rows={rows}
           columns={columns}

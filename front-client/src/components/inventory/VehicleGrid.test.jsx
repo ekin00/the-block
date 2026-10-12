@@ -74,6 +74,13 @@ describe('VehicleGrid', () => {
     expect(screen.queryByRole('columnheader', { name: 'Favorite' })).toBeNull();
   });
 
+  it('renders Favorite column with heart icon header when showFavorite is true', () => {
+    renderWithTheme(<VehicleGrid rows={mockRows} showFavorite />);
+    const favHeader = screen.getByRole('columnheader', { name: 'Favorite' });
+    expect(favHeader).toBeTruthy();
+    expect(favHeader.querySelector('svg')).toBeTruthy();
+  });
+
   it('renders server-slice rows with correct cell values', () => {
     renderWithTheme(
       <VehicleGrid

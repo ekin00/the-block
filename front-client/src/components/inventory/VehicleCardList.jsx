@@ -21,6 +21,17 @@ const VehicleCardList = ({
   onToggleCompare,
 }) => (
   <Stack spacing={2}>
+    {/* BTW just to make it nice to next page on top  */}
+    <TablePagination
+      component="div"
+      count={rowCount}
+      page={paginationModel.page}
+      rowsPerPage={paginationModel.pageSize}
+      rowsPerPageOptions={PAGE_SIZES}
+      onPageChange={(_, page) => onPaginationModelChange?.({ ...paginationModel, page })}
+      onRowsPerPageChange={(event) => onPaginationModelChange?.({ page: 0, pageSize: Number(event.target.value) })}
+      sx={{ '& .MuiTablePagination-toolbar': { flexWrap: 'wrap', px: 0 } }}
+    />
     {rows.map((vehicle) => (
       <VehicleCard
         key={vehicle.id}

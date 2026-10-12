@@ -152,6 +152,8 @@ const InventoryPage = () => {
         {...rendererProps}
         sortModel={view.sortModel}
         onSortModelChange={(sortModel) => update({ sortModel })}
+
+        showFavorite={true}
       />
     );
   } else if (activeTotal === 0) {

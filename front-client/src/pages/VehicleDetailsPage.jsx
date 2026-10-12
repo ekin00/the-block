@@ -185,7 +185,6 @@ const VehicleDetailsPage = () => {
         </Tooltip>
       </Stack>
       <Tooltip
-        interactive            // keeps the bubble open so it can be clicked
         arrow
         placement="bottom-start"
         enterTouchDelay={0}

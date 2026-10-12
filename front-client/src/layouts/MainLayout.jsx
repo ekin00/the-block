@@ -16,7 +16,7 @@ const MainLayout = ({ children }) => {
       <Navbar />
       <Container
         component="main"
-        maxWidth="lg"
+        maxWidth="xl"
         sx={{
           flexGrow: 1,
           display: 'flex',

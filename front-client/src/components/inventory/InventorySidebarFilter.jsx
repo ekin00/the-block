@@ -211,10 +211,10 @@ function CheckboxSection({
               sx={
                 scrollable
                   ? {
-                      maxHeight: 240,
-                      overflowY: 'auto',
-                      pr: 0.5,
-                    }
+                    maxHeight: 240,
+                    overflowY: 'auto',
+                    pr: 0.5,
+                  }
                   : undefined
               }
             >
@@ -276,7 +276,7 @@ const POST_ODOMETER_SECTIONS = [
     title: 'Make',
     sectionKey: 'make',
     scrollable: true,
-/* remove  searchable, searchLabel, and scrollable for Make */
+    /* remove  searchable, searchLabel, and scrollable for Make */
   },
   {
     title: 'Model',
@@ -290,7 +290,7 @@ const POST_ODOMETER_SECTIONS = [
     sectionKey: 'engine',
     searchable: true,
     searchLabel: 'Search engines',
-    scrollable: true,
+    /*BTW  scrollable: true, */
   },
   {
     title: 'Transmission',

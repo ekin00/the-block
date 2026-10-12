@@ -38,3 +38,9 @@ cd front-client
 npm install
 
 npm run dev
+
+### Troubleshooting
+
+netstat -ano | findstr :5000
+
+taskkill /pid process_id /F

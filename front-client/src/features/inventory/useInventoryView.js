@@ -215,6 +215,13 @@ export function useInventoryView({
     [searchParams, viewportPageSize],
   );
 
+  // MUI DataGrid re-applies the `sortModel` prop whenever its reference
+  // changes and answers that "change" by jumping back to the first page.
+  // parseView builds a fresh array for every URL change (even `page=`), so
+  // memoize the model on the raw `sort` param to keep the reference stable.
+  const sortParam = searchParams.get('sort');
+  const sortModel = useMemo(() => parseSort(sortParam), [sortParam]);
+
   // Normalize only on the inventory route itself, so a write can never attach
   // `?size=` to another route after departure.
   useEffect(() => {
@@ -376,6 +383,7 @@ export function useInventoryView({
   return {
     ...parsedView,
     ...derived,
+    sortModel,
     activeRows,
     dataErrors,
     filters,

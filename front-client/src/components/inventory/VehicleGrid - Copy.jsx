@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import * as React from 'react';
 import {
+  Box,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -10,6 +11,7 @@ import {
   Tooltip,
   Typography,
 } from '@mui/material';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import CompareArrowsIcon from '@mui/icons-material/CompareArrows';
@@ -32,37 +34,37 @@ function FavoriteCell({ vehicleId, favoriteIds, onToggleFavorite }) {
   return (
     <Tooltip title={label} arrow>
       <span>
-      <IconButton
-        size="small"
-        aria-label={label}
-        disabled={!onToggleFavorite}
-        onClick={(event) => {
-          // Handle this action immediately instead of opening the row menu.
-          event.stopPropagation();
-          onToggleFavorite?.(vehicleId);
-        }}
-        onDoubleClick={(event) => event.stopPropagation()}
-        sx={{
-          width: 34,
-          height: 34,
-          color: isFavorite ? theme.palette.error.main : 'text.secondary',
-          border: '1px solid',
-          borderColor: isFavorite ? theme.palette.error.light : 'divider',
-          borderRadius: 1.5,
-          bgcolor: isFavorite ? theme.palette.error.light + '14' : 'transparent',
-          transition: 'all 0.2s ease',
-          '&:hover': {
-            bgcolor: isFavorite ? theme.palette.error.light + '29' : 'action.hover',
-            borderColor: isFavorite ? theme.palette.error.main : 'text.secondary',
-          },
-        }}
-      >
-        {isFavorite ? (
-          <FavoriteIcon fontSize="small" sx={{ color: theme.palette.error.main }} />
-        ) : (
-          <FavoriteBorderIcon fontSize="small" />
-        )}
-      </IconButton>
+        <IconButton
+          size="small"
+          aria-label={label}
+          disabled={!onToggleFavorite}
+          onClick={(event) => {
+            // Handle this action immediately instead of opening the row menu.
+            event.stopPropagation();
+            onToggleFavorite?.(vehicleId);
+          }}
+          onDoubleClick={(event) => event.stopPropagation()}
+          sx={{
+            width: 34,
+            height: 34,
+            color: isFavorite ? theme.palette.error.main : 'text.secondary',
+            border: '1px solid',
+            borderColor: isFavorite ? theme.palette.error.light : 'divider',
+            borderRadius: 1.5,
+            bgcolor: isFavorite ? theme.palette.error.light + '14' : 'transparent',
+            transition: 'all 0.2s ease',
+            '&:hover': {
+              bgcolor: isFavorite ? theme.palette.error.light + '29' : 'action.hover',
+              borderColor: isFavorite ? theme.palette.error.main : 'text.secondary',
+            },
+          }}
+        >
+          {isFavorite ? (
+            <FavoriteIcon fontSize="small" sx={{ color: theme.palette.error.main }} />
+          ) : (
+            <FavoriteBorderIcon fontSize="small" />
+          )}
+        </IconButton>
       </span>
     </Tooltip>
   );
@@ -80,35 +82,35 @@ function CompareCell({ vehicleId, compareIds, onToggleCompare }) {
       arrow
     >
       <span>
-      <IconButton
-        size="small"
-        aria-label={label}
-        disabled={!onToggleCompare || limitReached}
-        onClick={(event) => {
-          event.stopPropagation();
-          onToggleCompare?.(vehicleId);
-        }}
-        onDoubleClick={(event) => event.stopPropagation()}
-        sx={{
-          width: 34,
-          height: 34,
-          border: '1px solid',
-          borderColor: isCompared ? 'primary.main' : 'divider',
-          borderRadius: 1.5,
-          color: isCompared ? 'primary.main' : 'text.secondary',
-          bgcolor: isCompared ? theme.palette.primary.main + '14' : 'transparent',
-          fontWeight: 800,
-          fontSize: '1rem',
-          lineHeight: 1,
-          transition: 'all 0.2s ease',
-          '&:hover': {
-            bgcolor: isCompared ? theme.palette.primary.main + '29' : 'action.hover',
-            borderColor: isCompared ? 'primary.dark' : 'text.secondary',
-          },
-        }}
-      >
-        {isCompared ? <CompareIcon fontSize="small" /> : <CompareArrowsIcon fontSize="small" />}
-      </IconButton>
+        <IconButton
+          size="small"
+          aria-label={label}
+          disabled={!onToggleCompare || limitReached}
+          onClick={(event) => {
+            event.stopPropagation();
+            onToggleCompare?.(vehicleId);
+          }}
+          onDoubleClick={(event) => event.stopPropagation()}
+          sx={{
+            width: 34,
+            height: 34,
+            border: '1px solid',
+            borderColor: isCompared ? 'primary.main' : 'divider',
+            borderRadius: 1.5,
+            color: isCompared ? 'primary.main' : 'text.secondary',
+            bgcolor: isCompared ? theme.palette.primary.main + '14' : 'transparent',
+            fontWeight: 800,
+            fontSize: '1rem',
+            lineHeight: 1,
+            transition: 'all 0.2s ease',
+            '&:hover': {
+              bgcolor: isCompared ? theme.palette.primary.main + '29' : 'action.hover',
+              borderColor: isCompared ? 'primary.dark' : 'text.secondary',
+            },
+          }}
+        >
+          {isCompared ? <CompareIcon fontSize="small" /> : <CompareArrowsIcon fontSize="small" />}
+        </IconButton>
       </span>
     </Tooltip>
   );
@@ -125,6 +127,8 @@ const VehicleGrid = ({
   rowCount,
   loading = false,
   now = new Date(),
+  userId,
+  showFavorite = false,
   onOpenDetails,
   onToggleFavorite,
   onToggleCompare,
@@ -161,7 +165,7 @@ const VehicleGrid = ({
       {
         field: 'compareAction',
         headerName: 'CF',
-        width: 95,
+        width: 60,
         sortable: false,
         filterable: false,
         align: 'center',
@@ -175,9 +179,21 @@ const VehicleGrid = ({
         ),
       },
       {
+        field: 'year',
+        headerName: 'Year',
+        type: 'number',
+        valueFormatter: (value) => value == null ? '' : String(value),
+        width: 70,
+        align: 'center',
+        headerAlign: 'center',
+        renderCell: (params) => (
+          <Typography variant="body2" sx={VEHICLE_TEXT_SX}>{params.formattedValue}</Typography>
+        ),
+      },
+      {
         field: 'make',
         headerName: 'Make',
-        width: 130,
+        width: 110,
         renderCell: (params) => (
           <Typography variant="body2" sx={VEHICLE_TEXT_SX}>
             {params.value}
@@ -187,30 +203,16 @@ const VehicleGrid = ({
       {
         field: 'model',
         headerName: 'Model',
-        minWidth: 150,
+        minWidth: 110,
         flex: 1,
         renderCell: (params) => (
-          <Tooltip title={params.row.condition_report || 'No report available'} arrow>
-            <Typography variant="body2" sx={VEHICLE_TEXT_SX}>{params.value}</Typography>
-          </Tooltip>
-        ),
-      },
-      {
-        field: 'year',
-        headerName: 'Year',
-        type: 'number',
-        valueFormatter: (value) => value == null ? '' : String(value),
-        width: 90,
-        align: 'center',
-        headerAlign: 'center',
-        renderCell: (params) => (
-          <Typography variant="body2" sx={VEHICLE_TEXT_SX}>{params.formattedValue}</Typography>
+          <Typography variant="body2" sx={VEHICLE_TEXT_SX}>{params.value}</Typography>
         ),
       },
       {
         field: 'trim',
         headerName: 'Trim',
-        width: 125,
+        width: 100,
         renderCell: (params) => (
           <Typography variant="body2" sx={VEHICLE_TEXT_SX}>{params.value || 'N/A'}</Typography>
         ),
@@ -218,64 +220,97 @@ const VehicleGrid = ({
       {
         field: 'odometer_mi',
         headerName: 'Odometer',
-        width: 125,
-        align: 'right',
-        headerAlign: 'right',
+        width: 110,
+        align: 'center',
+        headerAlign: 'center',
         renderCell: (params) => {
           const miles = params.row.odometer_mi;
           return (
-            <Typography variant="body2" sx={VEHICLE_TEXT_SX}>
-              {Number.isFinite(miles) ? `${miles.toLocaleString()} mi` : '—'}
-            </Typography>
+            <Tooltip title={params.row.condition_report || 'No report available'} arrow>
+              <Typography variant="body2" sx={VEHICLE_TEXT_SX}>
+                {Number.isFinite(miles) ? `${miles.toLocaleString()} mi` : '—'}
+              </Typography>
+            </Tooltip>
           );
         },
       },
       {
         field: 'auction_end',
         headerName: 'Time left',
-        width: 160,
-        renderCell: (params) => <AuctionEndChip vehicle={params.row} now={now} />,
+        width: 140,
+        renderCell: (params) => (
+          <Box sx={{ display: 'inline-flex', alignItems: 'center', height: '100%' }}>
+            <AuctionEndChip vehicle={params.row} now={now} />
+          </Box>
+        ),
       },
       {
         field: 'current_bid',
         headerName: 'Current Bid',
-        width: 130,
+        width: 110,
         align: 'right',
         headerAlign: 'right',
         renderCell: (params) => {
           const bid = params.row.current_bid ?? params.row.starting_bid;
+          const isHighBidder = Boolean(
+            (userId != null && params.row.current_winner_id != null
+              && String(params.row.current_winner_id) === String(userId))
+            || params.row.is_winner
+          );
           return (
-            <Typography
-              variant="body2"
+            <Box
               sx={{
-                fontWeight: 700,
-                color: 'success.main',
-                fontVariantNumeric: 'tabular-nums',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'flex-end',
+                gap: 0.5,
+                width: '100%',
               }}
             >
-              {bid != null ? `$${bid.toLocaleString()}` : '—'}
-            </Typography>
+              {isHighBidder && (
+                <Tooltip title="You are the high bidder" arrow>
+                  <CheckCircleOutlineIcon
+                    data-testid="high-bidder-icon"
+                    sx={{ fontSize: '1rem', color: 'success.main', flexShrink: 0 }}
+                  />
+                </Tooltip>
+              )}
+              <Typography
+                variant="body2"
+                sx={{
+                  fontWeight: 700,
+                  color: isHighBidder ? 'success.main' : 'common.black',
+                  fontVariantNumeric: 'tabular-nums',
+                }}
+              >
+                {bid != null ? `$${bid.toLocaleString()}` : '—'}
+              </Typography>
+            </Box>
           );
         },
       },
-      {
-        field: 'favorite',
-        headerName: 'Favorite',
-        width: 95,
-        sortable: false,
-        filterable: false,
-        align: 'center',
-        headerAlign: 'center',
-        renderCell: (params) => (
-          <FavoriteCell
-            vehicleId={params.row.id}
-            favoriteIds={favoriteIds}
-            onToggleFavorite={onToggleFavorite}
-          />
-        ),
-      },
+      ...(showFavorite
+        ? [
+          {
+            field: 'favorite',
+            headerName: 'Favorite',
+            width: 95,
+            sortable: false,
+            filterable: false,
+            align: 'center',
+            headerAlign: 'center',
+            renderCell: (params) => (
+              <FavoriteCell
+                vehicleId={params.row.id}
+                favoriteIds={favoriteIds}
+                onToggleFavorite={onToggleFavorite}
+              />
+            ),
+          },
+        ]
+        : []),
     ],
-    [compareIds, favoriteIds, now, onToggleCompare, onToggleFavorite],
+    [compareIds, favoriteIds, now, onToggleCompare, onToggleFavorite, showFavorite, userId],
   );
 
   return (
@@ -375,35 +410,35 @@ const VehicleGrid = ({
       >
         {selectedVehicle
           ? [
-              <MenuItem
-                key="favorite"
-                disabled={!onToggleFavorite}
-                onClick={() => {
-                  onToggleFavorite?.(selectedVehicle.id);
-                  setMenu(null);
-                }}
-              >
-                <ListItemIcon>
-                  {favoriteIds.includes(selectedVehicle.id) ? (
-                    <FavoriteIcon fontSize="small" sx={{ color: 'error.main' }} />
-                  ) : (
-                    <FavoriteBorderIcon fontSize="small" />
-                  )}
-                </ListItemIcon>
-                <ListItemText>
-                  {favoriteIds.includes(selectedVehicle.id) ? 'Remove Favorite' : 'Save Favorite'}
-                </ListItemText>
-              </MenuItem>,
-              <MenuItem
-                key="details"
-                onClick={() => {
-                  openDetails(selectedVehicle);
-                  setMenu(null);
-                }}
-              >
-                <ListItemText inset>See Details</ListItemText>
-              </MenuItem>,
-            ]
+            <MenuItem
+              key="favorite"
+              disabled={!onToggleFavorite}
+              onClick={() => {
+                onToggleFavorite?.(selectedVehicle.id);
+                setMenu(null);
+              }}
+            >
+              <ListItemIcon>
+                {favoriteIds.includes(selectedVehicle.id) ? (
+                  <FavoriteIcon fontSize="small" sx={{ color: 'error.main' }} />
+                ) : (
+                  <FavoriteBorderIcon fontSize="small" />
+                )}
+              </ListItemIcon>
+              <ListItemText>
+                {favoriteIds.includes(selectedVehicle.id) ? 'Remove Favorite' : 'Save Favorite'}
+              </ListItemText>
+            </MenuItem>,
+            <MenuItem
+              key="details"
+              onClick={() => {
+                openDetails(selectedVehicle);
+                setMenu(null);
+              }}
+            >
+              <ListItemText inset>See Details</ListItemText>
+            </MenuItem>,
+          ]
           : []}
       </Menu>
     </>
