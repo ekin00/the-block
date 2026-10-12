@@ -162,7 +162,7 @@ Although I initially planned to implement Favorites and Compare with feature tog
 
 It felt like participating in a hackathon, something I haven’t done in a while.
 
-A car auction webite with lots of data, not too much flashing photos. I start by explored several car auction websites and drew on my previous experience with eBay, but quickly realized that the key information is quite different. Year, Make, Model, and Trim (YMMT) are essential to the experience. While some sites emphasize photos and videos, this challenge is primarily about the data.
+This is a car auction webite with lots of data, not too much flashing photos. I start by explored several car auction websites and drew on my previous experience with eBay, but quickly realized that the key information is quite different. Year, Make, Model, and Trim (YMMT) are essential to the experience. While some sites emphasize photos and videos, this challenge is primarily about the data.
 
 To get a better sense of what was possible, I downloaded sample code from MUI and used it as a starting point. I then built a mockup with hardcoded data to experiment with the interface and functionality. You can check it out prototype http://localhost:5173/demo it's done with from from AI.
 
