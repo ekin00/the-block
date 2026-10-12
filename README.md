@@ -1,146 +1,192 @@
-<p align="center">
-  <img src="docs/the_block_repo.png" alt="The Block challenge hero image" width="960" />
-</p>
+# Submission
 
-# The Block
+Use this as a starting point for your repo's README in your fork of this challenge.
 
-### A coding challenge from OPENLANE
+When you're finished, send the link to your repo to your contact at **OPENLANE**.
+
+Delete what you don't need, add what you want.
 
 ---
 
-OPENLANE powers one of the world's largest digital marketplaces for used vehicles. Every day, thousands of vehicles move through our platform - inspected, listed, auctioned, and sold. Your job is to interpret what we do and bring a working prototype to life.
+# -The Block `
 
-We're hiring for a team that builds fast, thinks independently, and takes ownership. This challenge is part of that process.
+## How to Run
 
-## The Challenge
+Step-by-step instructions to get the project running locally.
 
-Build the **buyer side of a vehicle auction platform as a web or mobile application**. We've included a dataset of 200 vehicles in [`data/vehicles.json`](data/vehicles.json), each listed by a selling dealership.
+These steps have been tested on Windows 11.
 
-A buyer should be able to browse inventory, inspect vehicle details, and place bids. That's the core experience. How you structure the product and how far you take it is up to you.
+### Retrieve the code
 
-## Core Requirements
+```
+git clone github https://github.com/ekin00/the-block.git
 
-- Browse and search the vehicle inventory
-- Vehicle detail views with specs, condition, damage notes, selling dealership, and photos
-- A bidding experience where a buyer can place bids on vehicles
-- A usable experience that works well on the platform you choose
-- Clear instructions in your README for how to run the project locally
-
-## Assumptions You Can Make
-
-- This is a prototype, not a production launch.
-- Please spend no more than 3-4 hours of work on this. If you spend more, that's your call, but we do not expect a fully built marketplace.
-- Use any framework, language, or stack.
-- If you want stack examples that fit this challenge, React + Vite is a good web option, and SwiftUI for iOS or Compose for Android are reasonable native mobile examples. None of these are required.
-- You may use AI tools and coding assistants, and their use is encouraged. Be ready to explain how you used them, what decisions you made, and what parts of the implementation you would refine.
-- Authentication and user accounts are **not required**.
-- A frontend-only implementation is completely acceptable.
-- You do **not** need to build seller workflows, checkout, payments, or dealer admin tooling.
-- Auction timestamps in the dataset are synthetic scheduling data. If you want to show countdowns or "live" states, it's fine to normalize them relative to "now" in your prototype.
-- Make reasonable product decisions, document your assumptions, and optimize for clarity over surface area.
-
-## Minimum Bar
-
-At a minimum, we want to see:
-
-- Inventory browsing and search
-- A clear vehicle detail experience
-- A bid flow with updated visible state
-- A usable experience on desktop and mobile
-- A repo we can clone and run by following your README
-
-## Stretch Ideas
-
-These are optional. Only do them if the basics are solid.
-
-- We care more about judgment than about any specific extra feature.
-- If you go beyond the basics, focus on improvements that make the buyer experience clearer, more useful, or more trustworthy.
-- That could show up in product decisions, UX details, implementation quality, or any other thoughtful extension that fits the timebox.
-
-## What to Submit
-
-1. **Fork this repo** to your own GitHub account
-2. Complete the challenge work in your fork
-3. Include a **README** in your repo with setup instructions and notable decisions
-4. When you're finished, share the link to your repo with your contact at **OPENLANE**
-
-We've included a [submission template](SUBMISSION.md) if you want a starting point.
-
-We should be able to clone your repo and have it running locally by following your README.
-
-## Timeline
-
-You have **5 days** from when you receive this challenge to submit it.
-
-This is not a speed run. We care more about your decisions and tradeoffs than the total number of features.
-
-## What Happens Next
-
-After you submit, we'll schedule a **45-60 minute walkthrough** where you'll screen-share and walk us through what you built. More details are in [`WALKTHROUGH.md`](WALKTHROUGH.md).
-
-## How We Evaluate
-
-We're not checking boxes. Here's what we care about:
-
-| | What we're looking at |
-|---|---|
-| **Product thinking** | Did you make smart decisions about what to build and how it should work? Does the UX make sense? |
-| **Craft** | Does it look and feel intentional? The details matter - design, layout quality, polish. |
-| **Technical quality** | Is the code clean, well-structured, and easy to follow? |
-| **Judgment** | Did you scope the work well for the time budget and make sensible tradeoffs? |
-| **Workflow** | Can you walk us through how you built it and why? (assessed in the walkthrough) |
-
-## The Data
-
-The vehicle dataset is at [`data/vehicles.json`](data/vehicles.json). Each vehicle includes:
-
-- Lot number, VIN, make, model, year, and trim
-- Specs (engine, transmission, drivetrain, fuel type, odometer)
-- Condition (grade, report, damage notes, title status)
-- Auction details (starting bid, reserve price, buy now price, auction start time)
-- Current bid and bid count (some vehicles already have active bids)
-- Location (city and province)
-- Selling dealership
-- Placeholder image URLs
-
-Here's what a single vehicle looks like:
-
-```json
-{
-  "id": "3cc3b89e-68b0-479e-af39-bca6251ea0b4",
-  "vin": "TRD7L1KS0HNB5X3K3",
-  "year": 2023,
-  "make": "Ford",
-  "model": "Bronco",
-  "trim": "Big Bend",
-  "body_style": "SUV",
-  "exterior_color": "Burgundy",
-  "interior_color": "Beige",
-  "engine": "2.7L EcoBoost V6",
-  "transmission": "automatic",
-  "drivetrain": "4WD",
-  "odometer_km": 47731,
-  "fuel_type": "gasoline",
-  "condition_grade": 3.8,
-  "condition_report": "Average condition. Has some visible wear on high-touch surfaces. Engine and transmission perform within normal parameters.",
-  "damage_notes": [
-    "Scratch on liftgate",
-    "Minor rust on wheel wells",
-    "Paint peeling on roof rack"
-  ],
-  "title_status": "clean",
-  "province": "Ontario",
-  "city": "Toronto",
-  "auction_start": "2026-04-05T14:00:00",
-  "starting_bid": 14500,
-  "reserve_price": 25000,
-  "buy_now_price": null,
-  "images": ["https://placehold.co/800x600?text=2023+Ford+Bronco+Photo+1", "..."],
-  "selling_dealership": "King City Auto",
-  "lot": "A-0043",
-  "current_bid": 22800,
-  "bid_count": 16
-}
+cd the-block\back-api
 ```
 
-The data is synthetic but meant to feel realistic. Use it however you want. Should you need reasonable accommodation, please reach out to careers@openlane.com
+### Create a virtual environment and activate it:
+
+```
+python -m venv venv
+```
+
+### Install the required dependencies:
+
+```
+venv\Scripts\activate
+```
+
+Install the required dependencies: this will take a few minutes
+
+```
+pip install -r requirements.txt
+```
+
+Sample output:
+
+```
+Collecting MarkupSafe>=2.0 (from Jinja2>=3.1.2->flask==3.0.3->-r requirements.txt (line 2))
+  Using cached markupsafe-3.0.4-cp314-cp314-win_amd64.whl.metadata (2.8 kB)
+Collecting typing-extensions>=4.6.0 (from sqlalchemy>=2.0.16->flask-sqlalchemy==3.1.1->-r requirements.txt (line 3))
+  Using cached typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Using cached flask-3.0.3-py3-none-any.whl (101 kB)
+Using cached flask_sqlalchemy-3.1.1-py3-none-any.whl (25 kB)
+Using cached flask_cors-6.0.5-py3-none-any.whl (16 kB)
+Using cached python_dotenv-1.0.0-py3-none-any.whl (19 kB)
+Using cached blinker-1.9.0-py3-none-any.whl (8.5 kB)
+Using cached click-8.5.0-py3-none-any.whl (125 kB)
+Using cached itsdangerous-2.2.0-py3-none-any.whl (16 kB)
+Using cached jinja2-3.1.6-py3-none-any.whl (134 kB)
+Using cached markupsafe-3.0.4-cp314-cp314-win_amd64.whl (14 kB)
+Using cached sqlalchemy-2.1.4-cp314-cp314-win_amd64.whl (2.4 MB)
+Using cached typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Using cached werkzeug-3.1.9-py3-none-any.whl (228 kB)
+Installing collected packages: typing-extensions, python-dotenv, MarkupSafe, itsdangerous, click, blinker, Werkzeug, sqlalchemy, Jinja2, flask, flask-sqlalchemy, flask-cors
+Successfully installed Jinja2-3.1.6 MarkupSafe-3.0.4 Werkzeug-3.1.9 blinker-1.9.0 click-8.5.0 flask-3.0.3 flask-cors-6.0.5 flask-sqlalchemy-3.1.1 itsdangerous-2.2.0 python-dotenv-1.0.0 sqlalchemy-2.1.4 typing-extensions-4.16.0
+
+```
+
+### Initialize the database for the first time
+
+The default SQLite URL is `sqlite:///theblock.db`.
+database file is `back-api\instance\theblock.db`.
+I have check-in.env to make this easier.
+
+```
+python init_db.py
+
+python import_vehicles.py --random-auction
+```
+
+### Start the back end with flask in development mode
+
+```
+python -m flask --app app run --debug --port 5000
+```
+
+### Start client
+
+Open another terminal
+
+```
+
+cd front-client
+
+```
+
+execute npm, this will take few seconds
+
+```
+npm install
+
+npm run dev
+```
+
+At the end you should see something like
+
+```
+VITE v6.4.4  ready in 423 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h + enter to show help
+
+```
+
+Use http://localhost:5173 as starting point
+
+## to rerun
+
+```
+.\venv\Scripts\python.exe reset_db.py
+.\venv\Scripts\python.exe import_vehicles.py --random-auction
+```
+
+## Time Spent
+
+Roughly how much time you spent and how you approached the time box.
+~10 hr
+Wed-Thursday looking at car auction website, test ux
+Friday api
+Sat-Sun client
+
+## Assumptions and Scope
+
+### What you intentionally included, skipped, or simplified.
+
+I was deeply impressed by how effectively AI handled the search and filter functionality, which allowed me to focus entirely on the table's user experience and components/inventory/VehicleGrid.jsx was reused in Favorites. The data fits perfectly into a table layout. Users can click a row to either favorite an item or view its details, and double-clicking a vehicle cell opens the details view instantly. In the vehicles detail page, I added tooltip in "VIN . Grade . Title status" to jump down to Condition report.
+
+While I initially start with feature toggles for favorites and compared in mind, but I ultimately shifted my focus toward polishing the overall UX.
+
+I had to skip the comparison feature, it's disable on the left most column. But the favorites page serves a similar purpose, even if it doesn't allow for a side-by-side comparison."
+
+## Stack
+
+- **Frontend:**
+  - vite, vitest
+  - react 19
+  - emotion/react
+  - mui 7 + x-data-grid
+
+- **Backend:**
+  - Python
+  - SQLAlchemy
+  - Flask
+
+- **Database:**
+  - SQLite
+
+## What I Built
+
+### A brief description of your project and your approach.
+
+It felt like participating in a hackathon, something I haven’t done in a while.
+
+A car auction webite with lots of data, not too much flashing photos. I start by explored several car auction websites and drew on my previous experience with eBay, but quickly realized that the key information is quite different. Year, Make, Model, and Trim (YMMT) are essential to the experience. While some sites emphasize photos and videos, this challenge is primarily about the data.
+
+To get a better sense of what was possible, I downloaded sample code from MUI and used it as a starting point. I then built a mockup with hardcoded data to experiment with the interface and functionality. You can check it out prototype http://localhost:5173/demo it's done with from from AI.
+
+AI helped me turn the code challenge into a phased development plan, with clear tasks, acceptance criteria, and testing steps for each phase. At every stage, both AI and I reviewed the implementation, verified the behavior, and addressed issues before moving on.
+
+I found the grill-me, react-best-practices, and material-ui-review skills especially useful. They helped AI and me to challenge assumptions, review the React architecture, catch potential issues, and validate the MUI implementation.
+
+The result was a working React/MUI prototype with hardcoded vehicle data, interactive Favorite and Compare features, and a foundation for exploring the car auction experience. More importantly, I had a structured process for moving from an initial idea to a functional demo, with AI assisting in both development and verification rather than simply generating code.
+
+## Notable Decisions
+
+### What choices did you make and why? What tradeoffs did you consider?
+
+I happen to be working on sample code from github planventure, this setup most of the stack.  
+I have considered tanstack but x-data-grid; community supported edition is what all I need.
+I use Github Copilot because I am using at work and there are different LLM that I can try and play with.
+
+## Testing
+
+## What you tested and how.
+
+Test at every phases using vitest, playwright mcp and shared browser.  
+The backend has it's own test ./back-api/verify/ there is AGENTS.md to guide the AI.
+
+## What I'd Do With More Time
+
+Finish the Compared page.
