@@ -442,7 +442,7 @@ const VehicleGrid = ({
         />
       </Paper>
       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 1 }}>
-        Click a row and choose See Details, double-click a row, or press Enter on a vehicle cell to open details.
+        Click a row and choose to Favorite, See Details, double-click a row on a vehicle cell to open details.
         {!onToggleFavorite && !onToggleCompare ? ' Favorites and Compare are coming in later phases.' : ''}
       </Typography>
 

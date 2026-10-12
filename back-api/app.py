@@ -21,9 +21,9 @@ load_dotenv(os.path.join(BASE_DIR, ".env"))
 
 app = Flask(__name__)
 # hardcode as backup?
-database_url = os.getenv("DATABASE_URL", "sqlite:///instance/theblock.db")
+database_url = os.getenv("DATABASE_URL", "sqlite:///theblock.db")
 if database_url == "your-sqldatabase-url-here":
-    database_url = "sqlite:///instance/theblock.db"
+    database_url = "sqlite:///theblock.db"
 
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev")
 app.config["SQLALCHEMY_DATABASE_URI"] = database_url
