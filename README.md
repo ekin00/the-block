@@ -176,16 +176,16 @@ The result was a working React/MUI prototype with hardcoded vehicle data, intera
 
 ### What choices did you make and why? What tradeoffs did you consider?
 
-I happen to be working on sample code from github planventure, this setup most of the stack.  
-I have considered tanstack but x-data-grid; community supported edition is what all I need.
-I use Github Copilot because I am using at work and there are different LLM that I can try and play with.
+I used the GitHub Planventure sample project as my starting point, since it already had most of the tech stack I needed. I considered TanStack Table, but decided that MUI X Data Grid Community Edition offered the functionality I needed without adding another library.
+
+I used GitHub Copilot because it’s the AI tool I work with professionally. It also gives me the opportunity to experiment with different LLMs such as Kimi.
 
 ## Testing
 
 ## What you tested and how.
 
 Test at every phases using vitest, playwright mcp and shared browser.  
-The backend has it's own test ./back-api/verify/ there is AGENTS.md to guide the AI.
+The backend has its own test ./back-api/verify/ there is AGENTS.md to guide the AI and myself.
 
 ## What I'd Do With More Time
 
