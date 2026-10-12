@@ -114,6 +114,12 @@ VITE v6.4.4  ready in 423 ms
 
 Use http://localhost:5173 as starting point
 
+### Start bidding
+
+Enter your name to start browsing the website, the name is saved into user database. By default website will create "guest#" so you can browse, but I didn't design guest# to return. I added "Switch user" on the upper right for quickly test another user.
+
+Compared feature is disable, I didn't get to it. But search , filter, detail, favorits are done.
+
 ## to rerun with clean data
 
 Here I assumed you active venv
