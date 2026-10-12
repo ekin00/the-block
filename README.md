@@ -13,7 +13,7 @@ These steps have been tested on Windows 11.
 ### Retrieve the code
 
 ```
-git clone github https://github.com/ekin00/the-block.git
+git clone https://github.com/ekin00/the-block.git
 
 cd the-block\back-api
 ```
@@ -67,7 +67,7 @@ database file is `back-api\instance\theblock.db`.
 I have check-in.env to make this easier.
 
 ```
-python init_db.py
+python reset_db.py
 
 python import_vehicles.py --random-auction
 ```
