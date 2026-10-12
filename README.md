@@ -116,9 +116,9 @@ Use http://localhost:5173 as starting point
 
 ### Start bidding
 
-Enter your name to start browsing the website, the name is saved into user database. By default website will create "guest#" so you can browse, but I didn't design guest# to return. I added "Switch user" on the upper right for quickly test another user.
+Enter your name to start browsing the website. Your name will be saved in the user database. If you don't enter a name, the website automatically creates a default user (e.g., guest1) so you can start exploring. Guest users aren't designed to be persistent, so I added a Switch User option in the upper-right corner to make it easy to test the website with different users.
 
-Compared feature is disable, I didn't get to it. But search , filter, detail, favorits are done.
+The Compare feature is currently disabled because I didn't have time to implement it. However, search, filtering, detail views, and favorites are all implemented and ready to explore.
 
 ## to rerun with clean data
 
