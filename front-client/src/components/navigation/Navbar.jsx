@@ -23,40 +23,37 @@ const Navbar = ({ children }) => {
     location.pathname.startsWith('/vehicles');
   const isFavorites = location.pathname.startsWith('/favorites');
 
-  const displayName = user?.name || 'Guest';
+  const displayName = user?.name ? `Hello ${user?.name}` : '';
 
   return (
     <AppBar position="sticky" sx={{ top: 0, zIndex: (theme) => theme.zIndex.drawer + 1 }}>
       <Toolbar>
         {children}
         {/* Brand: client-route home */}
+
         <Box
-          component={Link}
-          to="/"
           sx={{
             display: 'flex',
             alignItems: 'center',
-            gap: 1.25,
-            cursor: 'pointer',
             flexGrow: 1,
-            userSelect: 'none',
-            color: 'inherit',
-            textDecoration: 'none'
+            minWidth: 0,
           }}
         >
           <Typography
+            component={Link}
+            to="/"
             variant="h6"
-            component="div"
             sx={{
               fontWeight: 800,
               letterSpacing: '-0.02em',
-              color: 'inherit'
+              color: 'inherit',
+              textDecoration: 'none',
+              whiteSpace: 'nowrap',
             }}
           >
             The Block
           </Typography>
         </Box>
-
         <Stack direction="row" spacing={{ xs: 1, sm: 1.5, md: 2 }} alignItems="center">
           {/* User greeting right before Inventory */}
           <Typography
@@ -70,7 +67,7 @@ const Navbar = ({ children }) => {
               fontSize: { xs: '0.8rem', sm: '0.95rem' }
             }}
           >
-            Hello {displayName}
+            {displayName}
           </Typography>
 
           {/* Inventory tab */}
@@ -174,9 +171,11 @@ const Navbar = ({ children }) => {
           >
             Switch User
           </Button>
+          
         </Stack>
       </Toolbar>
     </AppBar>
+
   );
 };
 

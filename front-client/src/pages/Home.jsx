@@ -3,11 +3,11 @@ import { Box, Button, Container, Typography, Paper, Fade } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import theblockLogo from '../assets/the_block_truck_start.gif';
 import WelcomeForm from '../components/welcome/WelcomeForm';
-
-const Home = ({ initialOpen = false }) => {
+/* { initialOpen = false }*/
+const Home = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const [isOpen, setIsOpen] = useState(initialOpen || location.pathname === '/welcome');
+  const location = useLocation(); /* initialOpen || */
+  const [isOpen, setIsOpen] = useState(location.pathname === '/welcome');
 
   useEffect(() => {
     if (location.pathname === '/welcome') {
@@ -43,7 +43,7 @@ const Home = ({ initialOpen = false }) => {
 
   return (
     <Container maxWidth="md" disableGutters sx={{ px: { xs: 1, sm: 3 } }}>
-      <Box 
+      <Box
         sx={{
           display: 'flex',
           flexDirection: 'column',
@@ -63,7 +63,7 @@ const Home = ({ initialOpen = false }) => {
         >
           <Box
             component="img"
-            src={theblockLogo} 
+            src={theblockLogo}
             alt="The Block"
             sx={{
               maxHeight: 500,
@@ -107,11 +107,11 @@ const Home = ({ initialOpen = false }) => {
           )}
         </Box>
 
-        <Typography 
-          variant="h3" 
+        <Typography
+          variant="h3"
           component="h1"
-          sx={{ 
-            mb: 2, 
+          sx={{
+            mb: 2,
             textAlign: 'center',
             color: 'secondary.main',
             fontSize: { xs: '1.75rem', sm: '2.5rem', md: '3rem' }
@@ -119,18 +119,18 @@ const Home = ({ initialOpen = false }) => {
         >
           Welcome to The Block
         </Typography>
-        <Typography 
+        <Typography
           variant="body1"
-          sx={{ 
-            mb: 2, 
+          sx={{
+            mb: 2,
             textAlign: 'center',
             color: 'secondary.light'
           }}
         >
-          Your next adventure begins here. 
+          Your next adventure begins here.
         </Typography>
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           size="large"
           onClick={handleOpen}
           sx={{ mt: 2 }}

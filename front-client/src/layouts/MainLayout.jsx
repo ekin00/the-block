@@ -3,6 +3,7 @@ import { Box, Container } from '@mui/material';
 import Navbar from '../components/navigation/Navbar';
 /*BTW remove import Footer from '../components/navigation/Footer'; */
 
+
 const MainLayout = ({ children }) => {
   return (
     <Box sx={{

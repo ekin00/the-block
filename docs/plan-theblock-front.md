@@ -173,7 +173,6 @@ Implemented in Phase 1e. Bidding happens in a dialog on the details page ("Place
 4. Handle duplicate/not-found/identity failures without silently presenting success. Clear or replace user-specific state on user switch and discard stale responses.
 5. Build the production Favorites page with the same VehicleGrid and `showActions={false}`. Preserve heart/compare controls and double-click details.
 6. Keep saved closed vehicles visible with a closed status and disabled bidding. The hide-closed rule applies to inventory, not stored favorites.
-7. Until this phase is complete, production favorites controls must be clearly unavailable rather than modifying demo state.
 
 ### Phase 3. Compare
 

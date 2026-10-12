@@ -60,7 +60,7 @@ describe('Responsive Layout 320px / 390px viewport safety', () => {
   });
 
   it('renders InventorySearchBar on 320px viewport without overflow', () => {
-    renderWithTheme(<InventorySearchBar value="" onChange={() => {}} onSearch={() => {}} />, 320);
+    renderWithTheme(<InventorySearchBar value="" onChange={() => { }} onSearch={() => { }} />, 320);
 
     const input = screen.getByRole('textbox', { name: 'Search inventory' });
     const button = screen.getByRole('button', { name: 'Search inventory' });
@@ -84,7 +84,7 @@ describe('Responsive Layout 320px / 390px viewport safety', () => {
         rows={[mockVehicle]}
         rowCount={15}
         paginationModel={{ page: 0, pageSize: 10 }}
-        onPaginationModelChange={() => {}}
+        onPaginationModelChange={() => { }}
       />,
       320,
     );

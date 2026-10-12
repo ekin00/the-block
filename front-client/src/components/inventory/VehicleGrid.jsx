@@ -291,23 +291,23 @@ const VehicleGrid = ({
       },
       ...(showFavorite
         ? [
-            {
-              field: 'favorite',
-              headerName: 'Favorite',
-              width: 95,
-              sortable: false,
-              filterable: false,
-              align: 'center',
-              headerAlign: 'center',
-              renderCell: (params) => (
-                <FavoriteCell
-                  vehicleId={params.row.id}
-                  favoriteIds={favoriteIds}
-                  onToggleFavorite={onToggleFavorite}
-                />
-              ),
-            },
-          ]
+          {
+            field: 'favorite',
+            headerName: 'Favorite',
+            width: 95,
+            sortable: false,
+            filterable: false,
+            align: 'center',
+            headerAlign: 'center',
+            renderCell: (params) => (
+              <FavoriteCell
+                vehicleId={params.row.id}
+                favoriteIds={favoriteIds}
+                onToggleFavorite={onToggleFavorite}
+              />
+            ),
+          },
+        ]
         : []),
     ],
     [compareIds, favoriteIds, now, onToggleCompare, onToggleFavorite, showFavorite, userId],

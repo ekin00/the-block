@@ -163,16 +163,6 @@ const WelcomeForm = ({ onClose }) => {
         {isLoading ? 'Joining...' : 'Browse Inventory'}
       </Button>
 
-      <Button
-        type="button"
-        variant="contained"
-        color="primary"
-        size="large"
-        disabled={isLoading}
-        onClick={() => handleJoinAndNavigate('/trips/new')}
-      >
-        {isLoading ? 'Joining...' : 'Create New Trip'}
-      </Button>
     </Box>
   );
 };
